@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "CMH.CS.ERP.IntegrationHub.Interpol.ConsoleApp": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "INTEGRATION_HUB_INTERPOL_INSTANCE_KEY": "00000000-0000-0000-0000-000000000001"
+      }
+    }
+  }
+}

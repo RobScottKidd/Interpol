@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\..\..\XML-COMMENT\CMH.CSS.ERP.IntegrationHub.CanonicalModels.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup> 
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.101-development" /> 
+    <PackageReference Include="FluentValidation" Version="9.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Configuration\CMH.CS.ERP.IntegrationHub.Interpol.Configuration.csproj" />
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

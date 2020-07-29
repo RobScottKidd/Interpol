@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "CMH.CS.ERP.IntegrationHub.Interpol.WinService": {
+      "commandName": "Project",
+      "commandLineArgs": "00000000-0000-0000-0000-000000000001",
+      "environmentVariables": {
+        "INTEGRATION_HUB_INTERPOL_INSTANCE_KEY": "00000000-0000-0000-0000-000000000001"
+      }
+    }
+  }
+}

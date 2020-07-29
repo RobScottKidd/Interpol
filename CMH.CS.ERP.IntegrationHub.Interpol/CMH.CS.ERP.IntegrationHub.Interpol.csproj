@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile>..\..\..\XML-COMMENT\CMH.CS.ERP.IntegrationHub.Interpol.xml</DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_DEV.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_ITG.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_PROD.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_QUA.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_DEV.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_ITG.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_QUA.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_DEV.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_ITG.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_PROD.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_QUA.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_DEV.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_ITG.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.dll.SSS_AWS_QUA.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CMH.Common.RabbitMQClient" Version="1.0.0.44-develop" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.6" />
+    <PackageReference Include="NLog.Extensions.Logging" Version="1.6.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Biz\CMH.CS.ERP.IntegrationHub.Interpol.Biz.csproj" />
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Configuration\CMH.CS.ERP.IntegrationHub.Interpol.Configuration.csproj" />
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.csproj" />
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Models\CMH.CS.ERP.IntegrationHub.Interpol.Models.csproj" />
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.ServiceHosting\CMH.CS.ERP.IntegrationHub.Interpol.ServiceHosting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="CommunicationConfiguration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="InterpolConfiguration.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

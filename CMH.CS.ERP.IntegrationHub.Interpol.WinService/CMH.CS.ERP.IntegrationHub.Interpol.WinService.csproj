@@ -1,0 +1,94 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RuntimeIdentifier>win7-x64</RuntimeIdentifier>
+    <ApplicationIcon />
+    <StartupObject />
+    <AssemblyName>CMH.CS.ERP.IntegrationHub.Interpol.WinService</AssemblyName>
+    <RootNamespace>CMH.CS.ERP.IntegrationHub.Interpol.WinService</RootNamespace>
+    <Configurations>Debug;Release</Configurations>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DocumentationFile></DocumentationFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" />
+    <None Remove="bin\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_DEV.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_ITG.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_PROD.config" />
+    <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_QUA.config" />
+    <None Remove="LogConfiguration.json" />
+    <None Remove="NLog.Release.config" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_DEV.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_ITG.config">
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_PROD.config">
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+    <Content Include="CMH.CS.ERP.IntegrationHub.Interpol.WinService.dll.CORP_QUA.config">
+      <DependentUpon>App.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="NLog.Release.config">
+      <DependentUpon>NLog.config</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <ExcludeFromSingleFile>false</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+  
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="3.1.0" />
+    <PackageReference Include="NLog" Version="4.7.2" />
+    <PackageReference Include="OctoPack" Version="3.6.4">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Unity" Version="5.11.7" />
+    <PackageReference Include="Unity.Configuration" Version="5.11.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol\CMH.CS.ERP.IntegrationHub.Interpol.csproj" />
+  </ItemGroup>
+
+</Project>

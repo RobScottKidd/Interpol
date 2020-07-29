@@ -1,0 +1,311 @@
+{
+  "AvailableBatches": [
+    {
+      "BatchID": "B7925E5B-239D-44E4-A8D7-491031066060",
+      "BatchItemID": "F3E6519B-DFA4-44DC-9074-6EF78C9545D7",
+      "SubmittedDate": "2020-05-13 16:26:44.0773428 -04:00",
+      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
+      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
+      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
+      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
+      "StatusID": "00000000-0000-0000-0000-000000000009",
+      "ClaytonBusinessUnit": "Corporate",
+      "ApplicationName": "CONCUR",
+      "SourceServer": "AS400",
+      "Priority": "5",
+      "NotificationInterval": "5",
+      "MaxWait": "5",
+      "Successful": null,
+      "Source": "",
+      "ProcessId": "66925E5B-238D-41E4-A8E7-491039566061"
+    },
+    {
+      "BatchID": "B9B053E2-3E31-4439-92EF-E582512C131E",
+      "BatchItemID": "E8DD858F-C783-4C6F-97D4-833974ACDAED",
+      "SubmittedDate": "2020-05-14 12:15:50.6704855 -04:00",
+      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
+      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
+      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
+      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
+      "StatusID": "00000000-0000-0000-0000-000000000009",
+      "ClaytonBusinessUnit": "Corporate",
+      "ApplicationName": "CONCUR",
+      "SourceServer": "AS400",
+      "Priority": "5",
+      "NotificationInterval": "5",
+      "MaxWait": "5",
+      "Successful": null,
+      "Source": "CONCUR",
+      "ProcessId": "60925E5B-238D-41E4-A8C7-491039566061"
+    },
+    {
+      "BatchID": "582221C3-D934-479F-847F-F7586183EE13",
+      "BatchItemID": "9013F2AC-1E7F-4661-9F2F-F2B4AA66C0D9",
+      "SubmittedDate": "2020-05-13 22:00:32.9207720 -04:00",
+      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
+      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
+      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
+      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
+      "StatusID": "00000000-0000-0000-0000-000000000009",
+      "ClaytonBusinessUnit": "Corporate",
+      "ApplicationName": "CONCUR",
+      "SourceServer": "AS400",
+      "Priority": "5",
+      "NotificationInterval": "5",
+      "MaxWait": "5",
+      "Successful": null,
+      "Source": "CONCUR",
+      "ProcessId": "66929E57-231D-41E4-A8E7-491035566061"
+    },
+    {
+      "BatchID": "6A1FBEDB-531F-48FC-B8EB-5BF08DE71027",
+      "BatchItemID": "8EE90562-EACC-45A7-8FA7-79F3AF61F24F",
+      "SubmittedDate": "2020-05-14 12:17:35.0380519 -04:00",
+      "CanonicalTypeID": "00000000-0000-0000-0000-00000000000B",
+      "BusinessUnitID": "00000000-0000-0000-0000-000000000002",
+      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Retail\",\"ApplicationName\":\"some application\",\"SourceServer\":\"server\",\"Priority\":5,\"NotificationInterval\":12345,\"MaxWait\":12345,\"NumberOfItems\":9}",
+      "ItemJSON": "{ \"Version\": \"v1.2\", \"Guid\": \"151a9748-82eb-44e1-977e-d01be6718ebf\", \"TransactionDate\": \"2020-02-21\", \"TransactionNumber\": \"2079226_21st_009\", \"LedgerName\": \"Clayton GAAP USD\", \"TransactionType\": \"PROP_TRANSACTIONS\", \"Source\": \"Felipe\", \"Lines\": [ { \"Guid\": \"151a9748-82eb-44e1-977e-d01be6718ebf\", \"TransactionNumber\": \"14213_980FC\", \"DefaultAmount\": 0.0, \"DefaultCurrency\": \"USD\", \"Event\": \"PURCHASE\", \"TattooComp\": \"TVALUE\", \"MasterDealerNumber\": 13579, \"InvestorNumber\": 93751, \"LoanType\": \"TYPE4C\", \"LenderCode\": \"63\", \"ProductNumber\": 20.0, \"DeedOfTrust\": \"DOT\", \"LotNumber\": 123456, \"DealInvoiceDate\": \"2020-02-15\", \"InvestorType\": \"ATTR10\", \"OriginalCreditScore\": 123456, \"Status\": \"ERROR\", \"State\": \"CONF\", \"DeedRecordDate\": \"2020-02-15\", \"ForeclosureSaleDate\": \"2020-02-15\", \"ModificationFlag\": \"MFLAG\", \"HampFlag\": \"HFLAG\", \"ToeFlag\": \"TFLAG\", \"PlanConfirmDate\": \"2020-02-15\", \"SourceCode\": \"SCODE\", \"Reference\": 123456, \"Description\": \"Description could be anything\", \"Control\": \"CONTROL\", \"LoanNumber\": 123456, \"LoanTransferNumber\": 123456, \"ApplicationId\": \"AID\", \"StockNumber\": \"SNumber\" } ] }",
+      "StatusID": "00000000-0000-0000-0000-000000000009",
+      "ClaytonBusinessUnit": "Retail",
+      "ApplicationName": "some application",
+      "SourceServer": "server",
+      "Priority": "5",
+      "NotificationInterval": "12345",
+      "MaxWait": "12345",
+      "Successful": null,
+      "Source": "",
+      "ProcessId": "66925ECD-238D-41E4-A8E7-499562566061"
+    }
+  ],
+  "DocumentLoadCriteria": [
+    {
+      "FileName": "apinvoice_import_1.zip",
+      "ResultJobId": 100,
+      "StoreDocument": true
+    },
+    {
+      "FileName": "apinvoice_import_2.zip",
+      "ResultJobId": 101,
+      "StoreDocument": false
+    },
+    {
+      "FileName": "apinvoice_import_3.zip",
+      "ResultJobId": 102,
+      "StoreDocument": false
+    }
+  ],
+  "Documents": [
+    {
+      "Content": "base64-encoded-byte-string",
+      "FileName": "a-file-name.xml",
+      "ContentType": "something",
+      "DocumentTitle": "Jason's awesome test file",
+      "DocumentAuthor": "Jason Allen",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "doc-name",
+      "DocumentId": "doc-id-example"
+    },
+    {
+      "Content": "<Empty/>",
+      "FileName": "empty-file.xml",
+      "ContentType": "text/xml",
+      "DocumentTitle": "Empty Report",
+      "DocumentAuthor": "Jason Allen",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "empty-file",
+      "DocumentId": "empty-file"
+    },
+    {
+      "Content": "<InvoiceHeaders><Guid>96A80F17-3627-427B-B72D-E28453DB2F73</Guid><Status>TPC</Status><InvoiceId>2199</InvoiceId><BusinessUnit>Corporate</BusinessUnit><BusinessCategory>Corporate</BusinessCategory><Source>CONCUR</Source><InvoiceNumber>CONCUR-JMA Test</InvoiceNumber><InvoiceAmount>2199.00</InvoiceAmount><InvoiceDate>2020-06-10</InvoiceDate><SupplierName>IHTC-001.InvoiceBatchTestSupplier</SupplierName><SupplierNumber>218030</SupplierNumber><SupplierSite>corporate</SupplierSite><InvoiceCurrency>USD</InvoiceCurrency><PaymentCurrency>USD</PaymentCurrency><Description>INTERPOL Mock Data for AP #1</Description><InvoiceType>Standard</InvoiceType><PaymentTerms>Immediate</PaymentTerms><TermsDate>2020-06-10</TermsDate><AccountingDate>2020-06-10</AccountingDate><PaymentMethod>CHECK</PaymentMethod><InvoiceLines><Guid>E4DFD324-6A58-4CCC-AC29-0A8AD231EBC6</Guid><LineNumber>1</LineNumber><LineType>ITEM</LineType><Amount>2199.00</Amount><Description>Single line item</Description><DistributionCombination>E200-L00000-A150001-C9999-P999-E999-99999-99999</DistributionCombination><BusinessCategory>Corporate</BusinessCategory><DealInvoiceDate>0001-01-01</DealInvoiceDate><EmployeeNumber>1625</EmployeeNumber><InvoiceId>2199</InvoiceId></InvoiceLines></InvoiceHeaders>",
+      "FileName": "AP_Invoices_Extract_1.xml",
+      "ContentType": "text/xml",
+      "DocumentTitle": "AP Test #1",
+      "DocumentAuthor": "Jason Allen",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "AP Test #1",
+      "DocumentId": "ap-invoices-doc-id-1"
+    },
+    {
+      "Content": "<Header><Version>v1.2</Version><Guid>151a9748-82eb-44e1-977e-d01be6718ebf</Guid><TransactionDate>2020-02-21</TransactionDate><TransactionNumber>2079226_21st_009</TransactionNumber><LedgerName>Clayton GAAP USD</LedgerName><Status>CREATED</Status><Subledger>Retail</Subledger><AhAccountingDate>2020-02-21</AhAccountingDate></Header>",
+      "FileName": "AccountingHub_Feedback_Extract_1.xml",
+      "ContentType": "text/xml",
+      "DocumentTitle": "AH Test #1",
+      "DocumentAuthor": "Jason Allen",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "AH Test #1",
+      "DocumentId": "ah-doc-id-1"
+    }
+  ],
+  "ESSJobRequests": [
+    {
+      "JobPackageName": "/oracle/apps/ess/financials/subledgerAccounting/shared",
+      "JobDefinitionName": "XLATXNIMPORT",
+      "ResultJobId": 200
+    }
+  ],
+  "ESSJobs": [
+    {
+      "RequestId": 100,
+      "Status": "SUCCEEDED",
+      "ExecutionDetails": "{ \"JOBS\": { \"JOBNAME\": \"Load Interface File for Import\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548444\", \"STATUS\": \"SUCCEEDED\", \"CHILD\": [ { \"JOBNAME\": \"Load File to Interface\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548452\", \"STATUS\": \"SUCCEEDED\" }, { \"JOBNAME\": \"Transfer File\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548447\", \"STATUS\": \"SUCCEEDED\" }, { \"JOBNAME\": \"Load File to Interface\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548449\", \"STATUS\": \"SUCCEEDED\" } ] } }"
+    },
+    {
+      "RequestId": 101,
+      "Status": "ERROR",
+      "ExecutionDetails": "{ \"JOBS\": { \"JOBNAME\": \"Load Interface File for Import\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548462\", \"STATUS\": \"FAIL\", \"CHILD\": [ { \"JOBNAME\": \"Load File to Interface\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548472\", \"STATUS\": \"FAIL\" }, { \"JOBNAME\": \"Transfer File\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548469\", \"STATUS\": \"SUCCESS\" } ] } }"
+    },
+    {
+      "RequestId": 102,
+      "Status": "ERROR",
+      "ExecutionDetails": "{ \"JOBS\": { \"JOBNAME\": \"Load Interface File for Import\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548478\", \"STATUS\": \"FAIL\", \"CHILD\": [ { \"JOBNAME\": \"Load File to Interface\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548482\", \"STATUS\": \"TIMEOUT\" }, { \"JOBNAME\": \"Transfer File\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548480\", \"STATUS\": \"TIMEOUT\" } ] } }"
+    },
+    {
+      "RequestId": 200,
+      "Status": "SUCCEEDED",
+      "ExecutionDetails": "{ \"JOBS\": { \"JOBNAME\": \"Load Interface File for Import\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548501\", \"STATUS\": \"SUCCEEDED\", \"CHILD\": [ { \"JOBNAME\": \"Load File to Interface\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548503\", \"STATUS\": \"SUCCEEDED\" }, { \"JOBNAME\": \"Transfer File\", \"JOBPATH\": \"/oracle/apps/ess/financials/commonModules/shared/common/interfaceLoader\", \"REQUESTID\": \"548502\", \"STATUS\": \"SUCCEEDED\" } ] } }"
+    }
+  ],
+  "ScheduleReportRequests": [
+    {
+      "CancelResult": "",
+      "JobDetails": [
+        {
+          "ReuseStatus": true,
+          "status": "Success"
+        }
+      ],
+      "JobName": "Default empty job",
+      "RequestId": "default-empty-job",
+      "JobInstanceId": "default-empty-job-instance"
+    },
+    {
+      "CancelResult": "",
+      "JobDetails": [
+        {
+          "status": "Success"
+        }
+      ],
+      "JobName": "Corporate BU_AP Invoices Extract Job_1",
+      "RequestId": "ap-invoice-job-1",
+      "JobInstanceId": "ap-invoice-job-1-instance"
+    },
+    {
+      "CancelResult": "",
+      "JobDetails": [
+        {
+          "status": "Running"
+        },
+        {
+          "status": "Success"
+        }
+      ],
+      "JobName": "All BUs BU_Accounting Hub Feedback Job_1",
+      "RequestId": "ah-job-1",
+      "JobInstanceId": "ah-job-1-instance"
+    },
+    {
+      "CancelResult": "",
+      "JobDetails": [
+        {
+          "ReuseStatus": true,
+          "status": "Failed",
+          "statusDetail": "Timeout"
+        }
+      ],
+      "JobName": "Supply BU_AP Payment Feedback Job_1",
+      "RequestId": "supply-appayment-job-1",
+      "JobInstanceId": "supply-appayment-job-1-instance"
+    }
+  ],
+  "SoapRequests": [
+    {
+      "Filename": "default-empty-file.xml",
+      "Response": {
+        "WebKey": "cs",
+        "Service": {
+          "IdcService": "GET_SEARCH_RESULTS",
+          "Document": {
+            "ResultSet": [
+              {
+                "Name": "SearchResults",
+                "Row": [
+                  {
+                    "Field": [
+                      {
+                        "Name": "dID",
+                        "Value": "empty-file"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "Filename": "Corporate BU_AP_Invoices_Extract_1.xml",
+      "Response": {
+        "WebKey": "cs",
+        "Service": {
+          "IdcService": "GET_SEARCH_RESULTS",
+          "Document": {
+            "ResultSet": [
+              {
+                "Name": "SearchResults",
+                "Row": [
+                  {
+                    "Field": [
+                      {
+                        "Name": "dID",
+                        "Value": "ap-invoices-doc-id-1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "Filename": "All BUs BU_AccountingHub_Feedback_Extract_1.xml",
+      "Response": {
+        "WebKey": "cs",
+        "Service": {
+          "IdcService": "GET_SEARCH_RESULTS",
+          "Document": {
+            "ResultSet": [
+              {
+                "Name": "SearchResults",
+                "Row": [
+                  {
+                    "Field": [
+                      {
+                        "Name": "dID",
+                        "Value": "ah-doc-id-1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "UcmUploads": [
+    {
+      "FileName": "XlaTransactionUpload_VMF_POC_4.zip",
+      "ResultDocumentId": "doc-id-1",
+      "StoreDocument": true
+    }
+  ]
+}
