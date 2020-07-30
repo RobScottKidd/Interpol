@@ -56,11 +56,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
         private IReportParameter GetReportParameterForDataType(DataTypes dataType)
         {
-            var paramSet = _dataCache.ReportParameters(_dateTimeProvider.CurrentTime)
-                          .FirstOrDefault(f => f.DataType.ToLower() == dataType.ToString().ToLower());
+            var paramSet = _dataCache.ReportParameters().FirstOrDefault(f => f.DataType.ToLower() == dataType.ToString().ToLower());
             if (paramSet == null)
             {
-                throw new NotImplementedException($"The data type '{dataType}' was not located in the database.");
+                throw new NotImplementedException($"The data type '{dataType}' was not located in the database");
             }
             return paramSet;
         }
@@ -458,21 +457,19 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         }
 
         /// <inheritdoc/>
-        public async Task<string> CreateAndRetrieveDataTypeFile(DataTypes dataType, string businessUnit,
-            DateTime startDate, DateTime endDate, bool includeEndDate, Guid taskLogId)
+        public async Task<string> CreateAndRetrieveDataTypeFile(DataTypes dataType, string businessUnit, DateTime startDate, DateTime endDate, bool includeEndDate, Guid taskLogId)
         {
-            var timerId = Guid.NewGuid();
-
             using var scheduleService = _oracleServiceFactory.GetScheduleService();
             using var genericSoapService = _oracleServiceFactory.GetSoapService();
             using var integrationService = _oracleServiceFactory.GetIntegrationService();
             var paramGroup = GetReportParameterForDataType(dataType);
             var scheduleRequest = GenerateScheduleRequest(paramGroup, businessUnit);
+            var timerId = Guid.NewGuid();
 
             AddParametersToRequest(paramGroup, scheduleRequest, startDate, endDate, includeEndDate, businessUnit);
 
             scheduleRequest.TrySerializeJson(out string result);
-            _logger.LogTrace("Report Parameter " + result);
+            _logger.LogTrace($"Report Parameter: {result}");
             _logger.LogInformation("Creating report request");
 
             // make the request, obtain the result
@@ -481,7 +478,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                             : await CreateReportJobAsync(scheduleService, scheduleRequest);
 
             // create request, make the request, obtain the result
-            _logger.LogInformation("Creating job instance request for jobId {0}", jobId);
+            _logger.LogInformation($"Creating job instance request for jobId {jobId}");
             var jobInstances = (_config.LogOracleCallTimes)
                             ? await _timer.RunTimedFunction(timerId, GetJobInstanceResponse, scheduleService, jobId, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.ReportJobInstanceCriticalAlertPoint))
                             : await GetJobInstanceResponse(scheduleService, jobId);

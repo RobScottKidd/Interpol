@@ -52,15 +52,14 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             IReportTaskDetailRepository reportTaskDetailRepo,
             IBUDataTypeLockRepository buDataTypeLockRepo,
             ITaskLogRepository<TaskLog> taskLogRepo,
-             IOracleBackflowProcessor<T> backflowProcessor,
-             IEnumerable<IOracleBackflowPostProcessor<T>> postProcessors
+            IOracleBackflowProcessor<T> backflowProcessor,
+            IEnumerable<IOracleBackflowPostProcessor<T>> postProcessors
         ) {
             _gateway = gateway;
             _logger = logger;
             _exporter = exporter;
             _enableExport = config.EnableDataExport;
             _cache = cache;
-            _cache.Expire(config.CacheLifetime.GetValueOrDefault());
             _dateTimeProvider = dateTimeProvider;
             _instanceKeyProvider = instanceKeyProvider;
             // indicate we're running the interpol service
@@ -85,7 +84,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <returns></returns>
         public async Task Run(CancellationToken token, int retryCount, int retryDelay)
         {
-            var items = _cache.BusinessUnits(_dateTimeProvider.CurrentTime);
+            var items = _cache.BusinessUnits();
             _logger.LogInformation($"Task for {BusinessUnit.BUName}.{DataType} running"); 
             string fileContents = string.Empty;
             string queryBu = BusinessUnit.BUAbbreviation;

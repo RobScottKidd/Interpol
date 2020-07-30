@@ -6,20 +6,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
     /// <summary>
     /// Exposes the capabilities of a DataCache
     /// </summary>
-    /// <typeparam name="T"></typeparam>
     public interface IDataCache
     {
         /// <summary>
-        /// Retrieves the cached items
+        /// Retrieves the cached business units
         /// </summary>
-        /// <param name="parentCacheTime">Specifies the last cache refresh time of parent cache if using cache across tiers</param>
-        IEnumerable<IBusinessUnit> BusinessUnits(DateTime? parentCacheTime = null);
+        IEnumerable<IBusinessUnit> BusinessUnits();
 
         /// <summary>
-        /// Retrieves the cached Report Parameter
+        /// Retrieves the cached report parameters
         /// </summary>
-        /// <param name="parentCacheTime">Specifies the last cache refresh time of parent cache if using cache across tiers</param>
-        IEnumerable<IReportParameter> ReportParameters(DateTime? parentCacheTime = null);
+        IEnumerable<IReportParameter> ReportParameters();
 
         /// <summary>
         /// Indicates the last time the cache was refreshed

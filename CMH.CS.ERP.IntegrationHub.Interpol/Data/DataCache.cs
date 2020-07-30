@@ -1,4 +1,5 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
+using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models;
 using Microsoft.Extensions.Logging;
@@ -16,87 +17,79 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
         private readonly ISqlProvider _sqlProvider;
         private readonly List<IBusinessUnit> cachedBusinessUnits;
         private readonly List<IReportParameter> cachedReportParameter;
-        private TimeSpan? cacheExpire;
+        private readonly Dictionary<string, DateTime> _cacheUpdates;
         private readonly IDateTimeProvider _dateTimeProvider;
         private readonly ILogger<DataCache> _logger;
 
+        private TimeSpan? _cacheLifetime;
+
         private const string _buStoredProcedureName = "usp_GetBusinessUnitCache";
         private const string _reportParameterStoredProcedureName = "usp_GetReportParameterCache";
+        private const string BU_CACHE = "BU cache";
+        private const string REPORT_PARAM_CACHE = "Report Parameters cache";
 
-        public DataCache(ILogger<DataCache> logger, ISqlProvider sqlProvider, IDateTimeProvider dateTimeProvider)
+        public DataCache(ILogger<DataCache> logger, IInterpolConfiguration config, ISqlProvider sqlProvider, IDateTimeProvider dateTimeProvider)
         {
             _sqlProvider = sqlProvider;
             _dateTimeProvider = dateTimeProvider;
             _logger = logger;
             cachedBusinessUnits = new List<IBusinessUnit>();
             cachedReportParameter = new List<IReportParameter>();
+            _cacheUpdates = new Dictionary<string, DateTime>()
+            {
+                { BU_CACHE, new DateTime() },
+                { REPORT_PARAM_CACHE, new Date() }
+            };
+
+            Expire(config.CacheLifetime.GetValueOrDefault());
         }
 
-        public IEnumerable<IBusinessUnit> BusinessUnits(DateTime? parentCacheTime = null)
-        {
-            var parentTime = parentCacheTime ?? _dateTimeProvider.CurrentTime;
-            RefreshCache(parentTime, "buCache");
-            return (cachedBusinessUnits);
-        }
-        public IEnumerable<IReportParameter> ReportParameters(DateTime? parentCacheTime = null)
-        {
-            var parentTime = parentCacheTime ?? _dateTimeProvider.CurrentTime;
-            RefreshCache(parentTime, "reportCache");
-            return (cachedReportParameter);
-        }
+        /// <inheritdoc/>
+        public IEnumerable<IBusinessUnit> BusinessUnits() => RefreshCache(BU_CACHE, cachedBusinessUnits, () => _sqlProvider.QueryStoredProcedure<BusinessUnit>(_buStoredProcedureName, null));
+
+        /// <inheritdoc/>
+        public IEnumerable<IReportParameter> ReportParameters() => RefreshCache(REPORT_PARAM_CACHE, cachedReportParameter, () => _sqlProvider.QueryStoredProcedure<ReportParameter>(_reportParameterStoredProcedureName, null));
 
         /// <summary>
         /// Refreshes the cache for the provided cache type
         /// </summary>
-        /// <param name="parentCacheTime"></param>
-        /// <param name="cacheType"></param>
-        private void RefreshCache(DateTime parentCacheTime, string cacheType)
+        /// <param name="cacheType">The cache to check and refresh</param>
+        private IEnumerable<T> RefreshCache<T>(string cacheType, List<T> cacheItems, Func<IEnumerable<T>> retrievalFunc)
         {
-            var parentExpiration = (parentCacheTime + cacheExpire) - _dateTimeProvider.CurrentTime ?? _dateTimeProvider.MinInterval;
-            var localExpiration = ((CacheUpdatedTime + cacheExpire) - _dateTimeProvider.CurrentTime) ?? _dateTimeProvider.MinInterval;
-
-            _logger.LogDebug($"Parent cache expires in { parentExpiration }, Local cache expires in { localExpiration }");
-
-            if (CacheUpdatedTime == null || // first run
-                parentExpiration.TotalMilliseconds < 0 || // the parent's cache timespan is expired against ours
-                localExpiration.TotalMilliseconds < 0) // our cache is expired
+            lock (cacheItems)
             {
-                _logger.LogInformation("Cache needs to be updated, so retrieving items");
-                if (cacheType == "buCache")
+                var cacheExpiration = ((_cacheUpdates[cacheType] + _cacheLifetime) - _dateTimeProvider.CurrentTime) ?? _dateTimeProvider.MinInterval;
+
+                _logger.LogDebug($"{ cacheType } expires in { cacheExpiration }");
+
+                if (CacheUpdatedTime == null // first run
+                    || cacheExpiration.TotalMilliseconds < 0) // cache is expired
                 {
-                    lock (cachedBusinessUnits)
-                    {
-                        cachedBusinessUnits.Clear();
-                        var newItems = _sqlProvider.QueryStoredProcedure<BusinessUnit>(_buStoredProcedureName, null);
-                        cachedBusinessUnits.AddRange(newItems);
-                        _logger.LogDebug($"BU Cache updated with { newItems.Count() } items");
-                    }
+                    _logger.LogInformation($"{ cacheType } needs to be updated, so retrieving items");
+                    cacheItems.Clear();
+                    var newItems = retrievalFunc();
+                    cacheItems.AddRange(newItems);
+                    _logger.LogDebug($"{ cacheType } updated with { newItems.Count() } items");
+
+                    CacheUpdatedTime = _cacheUpdates[cacheType] = _dateTimeProvider.CurrentTime;
                 }
-                else if (cacheType == "reportCache")
+                else
                 {
-                    lock (cachedReportParameter)
-                    {
-                        cachedReportParameter.Clear();
-                        var newItems = _sqlProvider.QueryStoredProcedure<ReportParameter>(_reportParameterStoredProcedureName, null);
-                        cachedReportParameter.AddRange(newItems);
-                        _logger.LogDebug($"Report Parameters Cache updated with { newItems.Count() } items");
-                    }
+                    _logger.LogInformation($"{cacheType} does not need to be updated, so using existing values");
                 }
 
-                CacheUpdatedTime = _dateTimeProvider.CurrentTime;
-            }
-            else
-            {
-                _logger.LogInformation("Cache does not need to be updated, so using existing values");
+                return cacheItems.AsReadOnly();
             }
         }
 
+        /// <inheritdoc/>
         public DateTime? CacheUpdatedTime { get; private set; }
 
+        /// <inheritdoc/>
         public void Expire(TimeSpan? length)
         {
-            cacheExpire = length;
-            //_logger.LogDebug("Updated cache time to {0}m", cacheExpire ?? _dateTimeProvider.MinInterval);
+            _cacheLifetime = length;
+            _logger.LogTrace($"Updated cache expire time to { _cacheLifetime ?? _dateTimeProvider.MinInterval }m");
         }
     }
 }
