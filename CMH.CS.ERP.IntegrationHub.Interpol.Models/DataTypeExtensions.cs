@@ -36,13 +36,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
             DataTypes.appaymentrequest => typeof(APPaymentRequest),
             DataTypes.supplier => typeof(Supplier),
             DataTypes.employeesync => typeof(EmployeeSync),
-            DataTypes.apinvoicestatusmessage => typeof(APInvoiceStatusMessage),
-            DataTypes.appaymentrequeststatusmessage => typeof(APPaymentRequestStatusMessage),
+            DataTypes.apinvoicestatusmessage => typeof(CSS.ERP.IntegrationHub.CanonicalModels.APInvoiceStatusMessage),
+            DataTypes.appaymentrequeststatusmessage => typeof(CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage),
             DataTypes.appayment => typeof(APPayment),
-            DataTypes.accountinghubstatusmessage => typeof(AccountingHubStatusMessage),
+            DataTypes.accountinghubstatusmessage => typeof(CSS.ERP.IntegrationHub.CanonicalModels.AccountingHubStatusMessage),
             DataTypes.gljournal => typeof(GLJournal),
-            DataTypes.cashmanagementstatusmessage => typeof(CashManagementStatusMessage),
-            DataTypes.gljournalstatusmessage => typeof(GLJournalStatusMessage),
+            DataTypes.cashmanagementstatusmessage => typeof(CSS.ERP.IntegrationHub.CanonicalModels.CashManagementStatusMessage),
+            DataTypes.gljournalstatusmessage => typeof(CSS.ERP.IntegrationHub.CanonicalModels.GLJournalStatusMessage),
             _ => throw new NotImplementedException($"No code type defined for { dataType }"),
         };
     }
