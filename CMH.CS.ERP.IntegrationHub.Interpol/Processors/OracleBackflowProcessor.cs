@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
-    public class OracleBackflowProcessor<T> : IOracleBackflowProcessor<T>
+    public abstract class OracleBackflowProcessor<T> : IOracleBackflowProcessor<T>
     {
         protected readonly ILogger _logger;
         protected string ROOT_ELEMENT;
@@ -20,10 +20,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// Base constructor
         /// </summary>
         /// <param name="logger"></param>
-        public OracleBackflowProcessor(ILogger<OracleBackflowProcessor<T>> logger, string rootElement = null)
+        public OracleBackflowProcessor(ILogger<OracleBackflowProcessor<T>> logger)
         {
             _logger = logger;
-            ROOT_ELEMENT = rootElement;
         }
 
         /// <summary>
@@ -90,9 +89,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     unsuccessfulItems.Add(new ProcessingResult<IUnparsable>()
                     {
-                        ProcessedItem = new Unparsable<T>()
+                        ProcessedItem = new Unparsable()
                         {
-                            //TreatAsDataType = typeof(T),
+                            TreatAsDataType = typeof(T),
                             BusinessUnits = new[] { businessUnit },
                             Error = e.Message,
                             Status = "Unparsable Xml",

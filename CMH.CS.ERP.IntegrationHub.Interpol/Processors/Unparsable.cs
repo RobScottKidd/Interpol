@@ -1,10 +1,11 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
+using System;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
-    public class Unparsable<T> : IUnparsable, IEMBRoutingKeyProvider, IVersionableModel
+    public class Unparsable : IUnparsable, IEMBRoutingKeyProvider, IAlternateDataTypeProvider, IVersionableModel
     {
         public string Xml { get; set; }
 
@@ -13,7 +14,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         public string[] BusinessUnits { get; set; }
 
         public string Status { get; set; }
-
+        
+        public Type TreatAsDataType { get; set; }
+        
         public string MessageType { get; set; }
 
         private string _version;
@@ -38,7 +41,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         }
 
         /// <summary>
-        /// Specifies the version of this canonical class
+        /// Specifies the version of this class
         /// </summary>
         public string InternalModelVersion => "V1.0";
     }
