@@ -176,16 +176,16 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
                 }
-                catch (DocumentErrorException e)
+                catch (ReportJobErrorException e)
                 {
-                    _logger.LogCritical(e, "Data returned from report is invalid. Not retrying");
+                    _logger.LogCritical(e, "Report job returned terminal error. Not retrying");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
                 }
-                catch (ReportJobCanceledException e) 
+                catch (ReportJobCanceledException e)
                 {
-                    _logger.LogCritical(e, "Job in wait state for over 15 minutes. Not retrying");
+                    _logger.LogCritical(e, "Report job has been canceled. Not retrying");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
@@ -206,12 +206,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     if (e is InvalidOperationException || e.InnerException is InvalidOperationException)
                     {
-                        _logger.LogCritical(e, "Cannot complete task because item or data is invalid. Not retrying");
+                        _logger.LogCritical(e, $"Cannot complete task because item or data is invalid for data type {DataType}, business unit {BusinessUnit.BUName}. Not retrying");
                         encounteredCriticalError = true;
                         UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                         break;
                     }
-                    _logger.LogCritical(e, $"Unknown failure returning report on data type { DataType } business unit { BusinessUnit.BUName }. Not retrying.");
+                    _logger.LogCritical(e, $"Unhandled failure returning report on data type { DataType } business unit { BusinessUnit.BUName }. Not retrying.");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Unknown, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;

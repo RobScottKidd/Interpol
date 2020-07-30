@@ -119,6 +119,26 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             return result;
         }
 
+        /// <summary>
+        /// Runs the provided method in wrapped in a timer
+        /// </summary>
+        /// <returns></returns>
+        public async Task<T> RunTimedFunction<T1, T2, T3, T4, T>(Guid id, Func<T1, T2, T3, T4, Task<T>> func, T1 arg1, T2 arg2, T3 arg3, T4 arg4, string dataType, string businessUnit, TimeSpan criticalAlertLimit)
+        {
+            var processId = Start(id, func.Method.Name.ToString(), dataType, businessUnit, criticalAlertLimit);
+
+            var result = await func.Invoke(arg1, arg2, arg3, arg4);
+
+            var timer = Stop(processId);
+
+            _logger.LogInformation("Call to Oracle {0} ThreadId: {1}, DataType {2}, BusinessUnit {3} execution time:  {4} mins, {5} seconds",
+                timer.TaskName, timer.Id, timer.DataType, timer.BusinessUnit, timer.ElapsedTime.Minutes, timer.ElapsedTime.Seconds);
+
+            CleanupTimers(ref timer);
+
+            return result;
+        }
+
         private void CleanupTimers(ref ThreadableStopWatch timer)
         {
             timer.Timer.Change(Timeout.Infinite, 0);

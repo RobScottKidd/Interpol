@@ -180,7 +180,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     if (retryCount == _config.CreateReportRequestRetryCount)
                     {
-                        throw new RetryException("Ran out of retries while attempting to schedule report. Retrying scheduler task.", e);
+                        throw new RetryException("Ran out of retries while attempting to schedule report.", e);
                     }
                 }
 
@@ -222,7 +222,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     if (retryCount == _config.ReportJobInstanceRequestRetryCount)
                     {
-                        throw new RetryException($"Ran out of retries while attempting to retrieve job instances for requestId {requestId}. Retrying scheduler task.", e);
+                        throw new RetryException($"Ran out of retries while attempting to retrieve job instances for requestId {requestId}.", e);
                     }
                 }
             }
@@ -236,9 +236,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="scheduleService">SOAP client for Oracle</param>
         /// <param name="jobInstanceId"> request info</param>
         /// <returns></returns>
-        public async Task<JobDetail> GetReportStatus(IOracleScheduleService scheduleService, string jobInstanceId)
+        public async Task<JobDetail> GetReportStatus(IOracleScheduleService scheduleService, string jobInstanceId, string datatype, string businessUnit)
         {
             JobDetail jobDetail = null;
+            string lastResponse = null;
             int retryCount = 0;
             DateTime startWaitTime = DateTime.Now;
             const long waitDuration = 15;
@@ -265,6 +266,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     // we don't know the status, treat as wait
                     if (jobDetail?.status == null || jobDetail.status != ReportJobResult.Running)
                     {
+                        // restart the clock if the job had been running before
+                        if (lastResponse == ReportJobResult.Running)
+                        {
+                            startWaitTime = DateTime.Now;
+                        }
+
                         if ((DateTime.Now - startWaitTime).TotalMinutes >= waitDuration)
                         {
                             _logger.LogWarning($"Job {jobInstanceId} has been in a wait state for over 15 minutes.");
@@ -283,7 +290,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 }
                 catch (JobFailedException)
                 {
-                    HandleNonSuccessTerminalJobStatus(jobDetail?.status, jobDetail.jobId, jobDetail?.statusDetail);
+                    HandleNonSuccessTerminalJobStatus(jobDetail?.status, jobDetail.jobId, jobDetail?.statusDetail, businessUnit, datatype);
                 }
                 catch (Exception e)
                 {
@@ -323,25 +330,27 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="status">Final status of the job</param>
         /// <param name="jobId">Identifier of the job run</param>
         /// <param name="statusDetail">Detail of the job status</param>
-        private void HandleNonSuccessTerminalJobStatus(string status, int jobId, string statusDetail)
+        /// <param name="businessUnit">The business unit associated with the job</param>
+        /// <param name="dataType">The data type associated with the job</param>
+        private void HandleNonSuccessTerminalJobStatus(string status, int jobId, string statusDetail, string businessUnit, string dataType)
         {
             // handles determining if there's a timeout message from the status detail
             if (_config.SchedulerServiceTimeoutIndicators?.Any(statusDetail.Contains) ?? false)
             {
-                _logger.LogError("Oracle job with ID {0} timed out before completion", jobId);
-                _logger.LogInformation("Status detail for timed out job {0} is {1}", jobId, statusDetail);
+                _logger.LogError($"Oracle job with ID {jobId} timed out before completion, {businessUnit}:{dataType}");
+                _logger.LogInformation($"Status detail for timed out job {jobId} is {statusDetail}");
                 throw new TimeoutException($"Job with ID {jobId} timed out before completion");
             }
 
-            if (status == ReportJobResult.OutputHasError)
+            if (status == ReportJobResult.OutputHasError || status == ReportJobResult.DeliveryHasError)
             {
-                _logger.LogError($"Oracle job with ID {jobId} returned status {status}");
-                throw new DocumentErrorException($"Job with ID {jobId} returned invalid output");
+                _logger.LogError($"Oracle job with ID {jobId} returned status {status}, {businessUnit}:{dataType}");
+                throw new ReportJobErrorException($"Job with ID {jobId} returned status {status}");
             }
 
-            _logger.LogWarning("Oracle job with ID {0} reached a terminal state without succeeding, final state was {1}", jobId, status);
-            _logger.LogInformation("Status detail for job {0} is {1}", jobId, statusDetail);
-            throw new RetryException($"Job with ID {jobId} reached a non-success terminal state of {status}. Retrying scheduler task");
+            _logger.LogWarning($"Oracle job with ID {jobId} reached a terminal state without succeeding, final state was {status}, {businessUnit}:{dataType}");
+            _logger.LogInformation($"Status detail for job {jobId} is {statusDetail}");
+            throw new RetryException($"Job with ID {jobId} reached a non-success terminal state of {status}");
         }
 
         /// <summary>
@@ -391,7 +400,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     if (retryCount == _config.ReportDocumentQueryRequestRetryCount)
                     {
-                        throw new RetryException($"{e.Message} Ran out of retries querying for report document {originalFileName}. Retrying scheduler task", e);
+                        throw new RetryException($"{e.Message} Ran out of retries querying for report document {originalFileName}", e);
                     }
                 }
 
@@ -423,7 +432,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     if (retryCount == _config.ReportDocumentRequestRetryCount)
                     {
-                        throw new RetryException($"Ran out of retries while attempting to retrieve document {documentId}. Retrying scheduler task", e);
+                        throw new RetryException($"Ran out of retries while attempting to retrieve document {documentId}", e);
                     }
                 }
 
@@ -485,18 +494,18 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 var cancelStatus = _config.LogOracleCallTimes
                             ? await _timer.RunTimedFunction(timerId, TryCancelReportJob, scheduleService, jobInstanceId, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.CancelReportJobCriticalAlertPoint))
                             : await TryCancelReportJob(scheduleService, jobInstanceId);
-                throw new RetryException("Error while attempting to store job id for task. Retrying scheduler task");
+                throw new RetryException("Error while attempting to store job id for task.");
             }
 
-            _logger.LogInformation("Creating job info request for jobInstanceId {0}", jobInstanceId);
+            _logger.LogInformation($"Creating job info request for jobInstanceId {jobInstanceId}");
             // create request, make the request, obtain the result
             var jobDetail = (_config.LogOracleCallTimes)
-                    ? await _timer.RunTimedFunction(timerId, GetReportStatus, scheduleService, jobInstanceId, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.ReportJobInfoCriticalAlertPoint))
-                    : await GetReportStatus(scheduleService, jobInstanceId);
+                    ? await _timer.RunTimedFunction(timerId, GetReportStatus, scheduleService, jobInstanceId, dataType.ToString(), businessUnit, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.ReportJobInfoCriticalAlertPoint))
+                    : await GetReportStatus(scheduleService, jobInstanceId, dataType.ToString(), businessUnit);  //TODO: fix design ^^
 
             if (jobDetail == null)
             {
-                _logger.LogError("Job {0} did not complete within the retry limit, status is unknown", jobId);
+                _logger.LogError($"Job {jobId} did not complete within the retry limit, status is unknown");
                 var cancelStatus = _config.LogOracleCallTimes
                             ? await _timer.RunTimedFunction(timerId, TryCancelReportJob, scheduleService, jobId, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.CancelReportJobCriticalAlertPoint))
                             : await TryCancelReportJob(scheduleService, jobId);
@@ -511,7 +520,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 var cancelStatus = _config.LogOracleCallTimes
                             ? await _timer.RunTimedFunction(timerId, TryCancelReportJob, scheduleService, jobId, dataType.ToString(), businessUnit, TimeSpan.Parse(_config.CancelReportJobCriticalAlertPoint))
                             : await TryCancelReportJob(scheduleService, jobId);
-                throw new RetryException($"Job {jobId} did not reach a terminal state within the retry limit. Retrying scheduler task");
+                throw new RetryException($"Job {jobId} did not reach a terminal state within the retry limit.");
             }
 
             var originalFileName = scheduleRequest.deliveryChannels.wccOptions[0].WCCFileName;
@@ -562,7 +571,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                     if (retryCount == _config.CancelScheduleJobRetryCount)
                     {
-                        _logger.LogError($"Ran out of retries while attempting to cancel report job");
+                        _logger.LogError($"Ran out of retries while attempting to cancel report job with ID {jobInstanceId}");
                         _taskLogRepo.UpdateTaskLogWithJobStatus(jobInstanceId, Interfaces.Enumerations.TaskStatus.Unknown.ToString());
                     }                      
                 }

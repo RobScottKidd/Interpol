@@ -116,7 +116,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 .Returns(new JobDetail() { status = "Failed", statusDetail = "" });
 
             var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
-            Assert.ThrowsAsync<RetryException>(() => sut.GetReportStatus(_scheduleService, "1234456"));
+            Assert.ThrowsAsync<RetryException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
         [Test]
@@ -126,7 +126,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 .Returns(new JobDetail() { status = "Failed", statusDetail = "Timeout"});
 
             var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
-            Assert.ThrowsAsync<TimeoutException>(() => sut.GetReportStatus(_scheduleService, "1234456"));
+            Assert.ThrowsAsync<TimeoutException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
         [Test]
@@ -136,7 +136,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 .Returns(new JobDetail() { status = "Output has Error", statusDetail = ""});
 
             var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
-            Assert.ThrowsAsync<DocumentErrorException>(() => sut.GetReportStatus(_scheduleService, "1234456"));
+            Assert.ThrowsAsync<ReportJobErrorException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
         [Test]
@@ -146,7 +146,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 .Returns(new JobDetail() { status = "Success", statusDetail = ""});
                         
             var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
-            JobDetail actual = await sut.GetReportStatus(_scheduleService, "1234456");
+            JobDetail actual = await sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype");
 
             Assert.AreEqual("Success", actual.status);
         }

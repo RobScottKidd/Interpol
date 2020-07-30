@@ -279,7 +279,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
             }
             catch (RabbitMQConnectionException rmqcex)
             {
-                _logger.LogError(rmqcex, "Unable to create and connect to system notification queue");
+                _logger.LogError(rmqcex, $"Unable to create and connect to system notification queue, InstanceID: {_instanceId}");
                 throw rmqcex;
             }
             try

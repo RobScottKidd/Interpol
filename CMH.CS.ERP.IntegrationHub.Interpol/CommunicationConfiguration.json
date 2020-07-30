@@ -19,6 +19,6 @@
   "ReportDocumentRequestCriticalAlertPoint": "00.00:07:00",
   "ReportEncodingName": "utf-8",
   "SchedulerServiceTimeoutIndicators": [ "time exceeds the limit", "time exceeded", "timeout", "time out", "Timeout" ],
-  "SchedulerServiceTerminalStatuses": [ "Failed", "Success", "Canceled", "Output has Error" ],
+  "SchedulerServiceTerminalStatuses": [ "Failed", "Success", "Canceled", "Output has Error", "Delivery has Error" ],
   "LogOracleCallTimes": true
 }
