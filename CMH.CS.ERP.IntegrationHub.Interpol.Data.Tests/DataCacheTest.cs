@@ -1,4 +1,5 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
+using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
@@ -24,9 +25,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data.Tests
         [Test]
         public void DataCache_ConstructorTest()
         {
-            var cache = new DataCache(A.Fake<ILogger<DataCache>>(),
+            var cache = new DataCache(
+                A.Fake<ILogger<DataCache>>(),
+                A.Fake<IInterpolConfiguration>(),
                 A.Fake<ISqlProvider>(),
-                A.Fake<IDateTimeProvider>());
+                A.Fake<IDateTimeProvider>()
+            );
 
             Assert.IsNotNull(cache);
         }

@@ -442,8 +442,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
 
         private SchedulerTask<object> SetupRunTest()
         {
-            A.CallTo(() => cache.BusinessUnits(A<DateTime>.Ignored))
-                .Returns(new List<BusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
+            A.CallTo(() => cache.BusinessUnits())
+                .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
             A.CallTo(() => reportDetailRepo.GetLastSuccessReportEnd(A<DataTypes>.Ignored, A<string>.Ignored)).Returns(reportTaskDetails);
             A.CallTo(() => instanceKeyProvider.InstanceKey).Returns(Guid.NewGuid());
             A.CallTo(() => gateway.CreateAndRetrieveDataTypeFile(A<DataTypes>.Ignored, A<string>.Ignored, A<DateTime>.Ignored, A<DateTime>.Ignored, A<bool>.Ignored, A<Guid>.Ignored)).Returns("file contents");

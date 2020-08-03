@@ -24,7 +24,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void SupplierGeneration()
         {
-            A.CallTo(() => _dataCache.BusinessUnits(DateTime.Now)).Returns(new BusinessUnit[] { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
+            A.CallTo(() => _dataCache.BusinessUnits()).Returns(new IBusinessUnit[] { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
  
             var model = new Supplier()
             {

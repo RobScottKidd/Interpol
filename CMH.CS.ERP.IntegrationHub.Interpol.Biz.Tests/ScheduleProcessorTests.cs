@@ -23,7 +23,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         public ScheduleProcessorTests()
         {
             _dataCacheProvider = A.Fake<IDataCache>();
-            A.CallTo(() => _dataCacheProvider.BusinessUnits(DateTime.UtcNow)).Returns(new BusinessUnit[] {
+            A.CallTo(() => _dataCacheProvider.BusinessUnits()).Returns(new IBusinessUnit[] {
                 new BusinessUnit() {
                     BUAbbreviation = "hbf",
                     BUName = "Home Building Group",

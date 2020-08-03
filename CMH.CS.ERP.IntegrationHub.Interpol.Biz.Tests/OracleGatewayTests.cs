@@ -49,8 +49,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             _serviceFactory = A.Fake<IOracleServiceFactory>();
             _reportNameProvider = A.Fake<IScheduleReportNameProvider>();
 
-            A.CallTo(() => _dataCache.ReportParameters(A<DateTime>.Ignored))
-                .Returns(new List<ReportParameter>() { new ReportParameter() {
+            A.CallTo(() => _dataCache.ReportParameters())
+                .Returns(new List<IReportParameter>() { new ReportParameter() {
                     ReportParameterID = new Guid("00000000-0000-0000-0000-000000000001"),
                     AttributeFormat ="TXML",
                     AttributeTemplate = "XSLT",
@@ -505,7 +505,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                    }
                }));
 
-            var test = _dataCache.ReportParameters(DateTime.UtcNow).First();
+            var test = _dataCache.ReportParameters().First();
 
             var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             var ex = Assert.ThrowsAsync<RetryException>(async () => await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
