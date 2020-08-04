@@ -14,6 +14,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
@@ -165,6 +167,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private async Task<string> CreateReportJobAsync(IOracleScheduleService scheduleService, ScheduleRequest scheduleRequest)
         {
             string jobId = null;
+            string endpointAction = GetEndpointActionName();
             for (int retryCount = 0; retryCount <= _config.CreateReportRequestRetryCount; retryCount++)
             {
                 try
@@ -172,6 +175,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     // request the job start
                     jobId = await scheduleService.ScheduleReportAsync(scheduleRequest);
                     break;
+                }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred during creation of report job", e, null, null, endpointAction);
                 }
                 catch (Exception e)
                 {
@@ -198,6 +205,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private async Task<List<string>> GetJobInstanceResponse(IOracleScheduleService scheduleService, string requestId)
         {
             List<string> jobInstances = null;
+            string endpointAction = GetEndpointActionName();
             for (int retryCount = 0; retryCount <= _config.ReportJobInstanceRequestRetryCount; retryCount++)
             {
                 // this gives Oracle time to create the job
@@ -207,6 +215,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     jobInstances = await scheduleService.GetAllJobInstanceIDsAsync(requestId);
                     break;
+                }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of job instance with requestId {requestId}", e, null, null, endpointAction);
                 }
                 catch (Exception e)
                 {
@@ -242,7 +254,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             int retryCount = 0;
             DateTime startWaitTime = DateTime.Now;
             const long waitDuration = 15;
-
+            string endpointAction = GetEndpointActionName();
             while (retryCount <= _config.ReportJobInfoRequestRetryCount)
             {
                 try
@@ -282,6 +294,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     _logger.LogInformation("Waiting for job {0} to complete, current status is {1}", jobInstanceId, jobDetail?.status ?? "not available");
                     await Task.Delay(_config.ReportJobInfoRequestDelay);
                     continue;
+                }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of job status", e, jobInstanceId, null, endpointAction);
                 }
                 catch (ReportJobCanceledException)
                 {
@@ -362,6 +378,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         {
             string documentId = null;
             var request = GenerateGenericForDocumentQuery(originalFileName);
+            string endpointAction = GetEndpointActionName();
             for (int retryCount = 0; retryCount <= _config.ReportDocumentQueryRequestRetryCount; retryCount++)
             {
                 try
@@ -393,6 +410,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     documentId = documentIds.Single();
                     break;
                 }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of document id", e, null, null, endpointAction); 
+                }
                 catch (Exception e)
                 {
                     _logger.LogInformation(e, "Could not query for report document {0} on attempt {1}, will attempt {2} more times", originalFileName, retryCount + 1, _config.ReportDocumentQueryRequestRetryCount - retryCount);
@@ -418,12 +439,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private async Task<DocumentDetails> GetDocument(IOracleIntegrationService integrationService, string documentId)
         {
             DocumentDetails documentDetails = null;
+            string endpointAction = GetEndpointActionName();
             for (int retryCount = 0; retryCount <= _config.ReportDocumentRequestRetryCount; retryCount++)
             {
                 try
                 {
                     documentDetails = await integrationService.GetDocumentForDocumentIdAsync(documentId);
                     break;
+                }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred while retrieving document", e, null, documentId, endpointAction); 
                 }
                 catch (Exception e)
                 {
@@ -547,6 +573,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         {
             int retryCount = 0;
             string response = null;
+            string endpointAction = GetEndpointActionName();
             _logger.LogInformation($"Canceling report job {jobInstanceId}");
             while (retryCount <= _config.CancelScheduleJobRetryCount)
             {
@@ -555,6 +582,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     response = await scheduleService.CancelScheduleAsync(jobInstanceId);
                     _taskLogRepo.UpdateTaskLogWithJobStatus(jobInstanceId, Interfaces.Enumerations.TaskStatus.Fail.ToString());
                     break;
+                }
+                catch(TimeoutException e)
+                {
+                    throw new EndpointTimeoutException($"Endpoint timeout occurred while attempting to cancel job", e, jobInstanceId, null, endpointAction); 
                 }
                 catch (Exception e)
                 {
@@ -639,6 +670,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         break;
                 }
             }
+        }
+
+        private string GetEndpointActionName([CallerMemberName]string name = null)
+        {
+            return name;
         }
     }
 }

@@ -20,7 +20,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                                 _username,
                                 _password;
         private readonly IBaseConfiguration<TestConfiguration> _testConfig;
-        private readonly TimeSpan _timeout;
+        private readonly TimeSpan _sendTimeout;
+        private readonly TimeSpan _receiveTimeout;
 
         /// <summary>
         /// Creates a new instance of OracleServiceFactory with the provided class logger, Oracle connection configuration,
@@ -49,7 +50,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _integrationServiceEndpoint = connectConfig.IntegrationServiceEndpoint;
             _scheduleServiceEndpoint = connectConfig.ScheduleServiceEndpoint;
             _genericSoapServiceEndpoint = connectConfig.GenericSoapServiceEndpoint;
-            _timeout = communicationConfig.Value.Timeout;
+            _sendTimeout = communicationConfig.Value.SendTimeout;
+            _receiveTimeout = communicationConfig.Value.ReceiveTimeout;
             _username = connectConfig.Username;
             _password = connectConfig.Password;
             _testConfig = testConfig;
@@ -66,7 +68,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             else
             {
                 _logger.LogTrace("Returning real instance of integration service");
-                return new OracleIntegrationServiceProxy(_integrationServiceEndpoint, _timeout, _username, _password);
+                return new OracleIntegrationServiceProxy(_integrationServiceEndpoint, _sendTimeout, _receiveTimeout, _username, _password);
             }
         }
 
@@ -81,7 +83,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             else
             {
                 _logger.LogTrace("Returning real instance of schedule service");
-                return new OracleScheduleServiceProxy(_scheduleServiceEndpoint, _timeout, _username, _password);
+                return new OracleScheduleServiceProxy(_scheduleServiceEndpoint, _sendTimeout, _receiveTimeout, _username, _password);
             }
         }
 
@@ -96,7 +98,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             else
             {
                 _logger.LogTrace("Returning real instance of soap service");
-                return new OracleSoapServiceProxy(_genericSoapServiceEndpoint, _timeout, _username, _password);
+                return new OracleSoapServiceProxy(_genericSoapServiceEndpoint, _sendTimeout, _receiveTimeout, _username, _password);
             }
         }
     }

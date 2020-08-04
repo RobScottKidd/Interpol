@@ -7756,8 +7756,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.ScheduleService
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
 
 
-        public ScheduleServiceClient(string endpointUrl, TimeSpan timeout, string username, string password) :
-        base(ScheduleServiceClient.GetBindingForEndpoint(timeout), ScheduleServiceClient.GetEndpointAddress(endpointUrl))
+        public ScheduleServiceClient(string endpointUrl, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password) :
+        base(ScheduleServiceClient.GetBindingForEndpoint(sendTimeout, receiveTimeout), ScheduleServiceClient.GetEndpointAddress(endpointUrl))
         {
             this.ChannelFactory.Credentials.UserName.UserName = username;
             this.ChannelFactory.Credentials.UserName.Password = password;
@@ -7768,7 +7768,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.ScheduleService
         {
         }
 
-        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan timeout)
+        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan sendTimeout, TimeSpan receiveTimeout)
         {
             var encoding = new MtomMessageEncoderBindingElement(new TextMessageEncodingBindingElement()
             {
@@ -7787,7 +7787,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.ScheduleService
                 AuthenticationScheme = System.Net.AuthenticationSchemes.Basic,
             };
 
-            var customBinding = new CustomBinding(encoding, transport);
+            var customBinding = new CustomBinding(encoding, transport)
+            {
+                SendTimeout = sendTimeout,
+                ReceiveTimeout = receiveTimeout
+            };
 
             return customBinding;
         }
