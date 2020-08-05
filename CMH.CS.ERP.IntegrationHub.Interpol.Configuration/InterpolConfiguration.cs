@@ -1,7 +1,6 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Configuration
 {
@@ -44,9 +43,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Configuration
         public DateTime MinimumAllowedReportStartDate { get; set; }
 
         /// <inheritdoc/>
-        public TimeSpan MaximumReportInterval { get; set; }
-
-        /// <inheritdoc/>
         public bool UseMultithreaded { get; set; }
 
         /// <inheritdoc/>
@@ -74,7 +70,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Configuration
             UseMultithreaded = interpolConfig.UseMultithreaded;
             RowLockTimeout = interpolConfig.RowLockTimeout;
             CacheLifetime = TimeSpan.FromMilliseconds(interpolConfig.CacheLifetime);
-            MaximumReportInterval = TimeSpan.FromMilliseconds(interpolConfig.MaximumReportInterval);
             CompletelyDisableInterpol = interpolConfig.CompletelyDisableInterpol;
         }
     }

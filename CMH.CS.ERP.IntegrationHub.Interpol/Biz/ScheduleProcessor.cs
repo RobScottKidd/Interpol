@@ -72,10 +72,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                             ?? throw new Exception($"Business Unit {businessUnit} specified in Interpol Configuration is invalid");
                         var timerState = new SchedulerTimerState()
                         {
-                            SchedulerTask = _taskFactory.GetSchedulerTask(
-                                dataType,
-                                matchingBusinessUnit),
-
+                            SchedulerTask = _taskFactory.GetSchedulerTask(dataType, matchingBusinessUnit),
                             Configuration = schedule
                         };
 
@@ -126,7 +123,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         //<-- Eventually we may want to take this out and allow the application to run in multi-threaded mode, but not until some other issues are resolved.
                         await _taskRunning.WaitAsync();
                     }
-                    await timerState.SchedulerTask.Run(token, _config.PollRetryCount.Value, _config.PollRetryDelay.Value);
+                    await timerState.SchedulerTask.Run(token, _config.PollRetryCount.Value, _config.PollRetryDelay.Value, timerState.Configuration);
                 }
                 catch (TaskCanceledException e)
                 {

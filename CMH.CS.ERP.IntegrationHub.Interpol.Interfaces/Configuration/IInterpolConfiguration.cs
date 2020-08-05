@@ -63,12 +63,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration
         public DateTime MinimumAllowedReportStartDate { get; set; }
 
         /// <summary>
-        /// Specifies the maximum time between the start and end date of a report
-        /// before it gets split into multiple reports
-        /// </summary>
-        public TimeSpan MaximumReportInterval { get; set; }
-
-        /// <summary>
         /// Configuration control that will allow the application to run in multithreaded mode
         /// </summary>
         public bool UseMultithreaded { get; set; }
