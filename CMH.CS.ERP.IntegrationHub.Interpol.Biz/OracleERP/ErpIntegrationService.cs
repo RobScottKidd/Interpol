@@ -2778,8 +2778,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
     public partial class ErpIntegrationServiceClient : System.ServiceModel.ClientBase<IErpIntegrationService>, IErpIntegrationService
     {
-        public ErpIntegrationServiceClient(string endpointUrl, TimeSpan timeout, string username, string password) :
-        base(ErpIntegrationServiceClient.GetBindingForEndpoint(timeout), ErpIntegrationServiceClient.GetEndpointAddress(endpointUrl))
+        public ErpIntegrationServiceClient(string endpointUrl, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password) :
+        base(ErpIntegrationServiceClient.GetBindingForEndpoint(sendTimeout, receiveTimeout), ErpIntegrationServiceClient.GetEndpointAddress(endpointUrl))
         {
             this.ChannelFactory.Credentials.UserName.UserName = username;
             this.ChannelFactory.Credentials.UserName.Password = password;
@@ -2792,7 +2792,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
 
-        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan timeout)
+        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan sendTimeout, TimeSpan receiveTimeout)
         {  
             var encoding = new MtomMessageEncoderBindingElement(new TextMessageEncodingBindingElement() { MessageVersion = MessageVersion.Soap11 });
             var transport = new HttpsTransportBindingElement()
@@ -2803,7 +2803,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 AuthenticationScheme = System.Net.AuthenticationSchemes.Basic,
             };
 
-            var customBinding = new CustomBinding(encoding, transport);
+            var customBinding = new CustomBinding(encoding, transport)
+            {
+                SendTimeout = sendTimeout,
+                ReceiveTimeout = receiveTimeout
+            };
 
             return customBinding;
         }

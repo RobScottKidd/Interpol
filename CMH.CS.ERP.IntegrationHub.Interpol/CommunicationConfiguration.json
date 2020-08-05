@@ -1,5 +1,6 @@
 {
-  "Timeout": "00:00:01",
+  "SendTimeout": "00:05:30",
+  "ReceiveTimeout": "02:05:00",
   "CancelScheduleJobRetryCount": 7,
   "CancelReportJobCriticalAlertPoint": "00.00:07:00",
   "CreateReportRequestRetryCount": 7,
