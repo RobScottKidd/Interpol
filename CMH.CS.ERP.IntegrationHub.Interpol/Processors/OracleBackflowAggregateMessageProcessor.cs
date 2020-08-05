@@ -64,6 +64,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     }
                     messageCount++;
 
+                    if (routingKey == $"hbf.erp.{dataType}" || routingKey == $"supply.erp.{dataType}")
+                    {
+                        routingKey = $"hbg.erp.{dataType}";
+                    }
+
                     SendMessage(item, routingKey, EventClass.Notice, typeof(T).Name);
                     CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);
                 }

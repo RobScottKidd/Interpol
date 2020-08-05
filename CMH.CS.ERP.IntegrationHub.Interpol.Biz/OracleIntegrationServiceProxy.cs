@@ -14,12 +14,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// Creates a new instance of OracleIntegrationServiceProxy with the provided connection parameters.
         /// </summary>
         /// <param name="integrationServiceEndpoint">The integration service URL</param>
-        /// <param name="timeout">The timespan to use before a timeout is triggered</param>
+        /// <param name="sendTimeout">The timespan to use before a send timeout is triggered</param>
+        /// <param name="receiveTimeout">The timespan to use before a receive timeout is triggered</param>
         /// <param name="username">The username to connect with</param>
         /// <param name="password">The password to connect with</param>
-        public OracleIntegrationServiceProxy(string integrationServiceEndpoint, TimeSpan timeout, string username, string password)
+        public OracleIntegrationServiceProxy(string integrationServiceEndpoint, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password)
         {
-            _integrationServiceClient = new ErpIntegrationServiceClient(integrationServiceEndpoint, timeout, username, password);
+            _integrationServiceClient = new ErpIntegrationServiceClient(integrationServiceEndpoint, sendTimeout, receiveTimeout, username, password);
         }
         
         /// <summary>

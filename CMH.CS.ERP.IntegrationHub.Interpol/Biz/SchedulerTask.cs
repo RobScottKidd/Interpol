@@ -167,30 +167,38 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Success, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount, itemCount);
                     break;
                 }
+                catch (EndpointTimeoutException e)
+                {
+                    _logger.LogCritical(e, $"Endpoint timeout encountered when trying to run scheduled task. Not retrying. {BusinessUnit.BUName}.{DataType}, " +
+                        $"JobId: {e.JobId ?? "unknown"}, documentId: {e.DocumentId ?? "unknown"}, endpoint action: {e.EndpointAction}.");
+                    encounteredCriticalError = true;
+                    UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
+                    break;
+                }
                 catch (TimeoutException e)
                 {
-                    _logger.LogCritical(e, "Timeout encountered when trying to run scheduled task. Not retrying");
+                    _logger.LogCritical(e, "Job timeout encountered when trying to run scheduled task. Not retrying.");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
                 }
                 catch (DbRowLockException e)
                 {
-                    _logger.LogCritical(e, "Issue with updating row lock. Not retrying");
+                    _logger.LogCritical(e, "Issue with updating row lock. Not retrying.");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
                 }
                 catch (ReportJobErrorException e)
                 {
-                    _logger.LogCritical(e, "Report job returned terminal error. Not retrying");
+                    _logger.LogCritical(e, "Report job returned terminal error. Not retrying.");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
                 }
                 catch (ReportJobCanceledException e)
                 {
-                    _logger.LogCritical(e, "Report job has been canceled. Not retrying");
+                    _logger.LogCritical(e, "Report job has been canceled. Not retrying.");
                     encounteredCriticalError = true;
                     UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                     break;
@@ -211,7 +219,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     if (e is InvalidOperationException || e.InnerException is InvalidOperationException)
                     {
-                        _logger.LogCritical(e, $"Cannot complete task because item or data is invalid for data type {DataType}, business unit {BusinessUnit.BUName}. Not retrying");
+                        _logger.LogCritical(e, $"Cannot complete task because item or data is invalid for data type {DataType}, business unit {BusinessUnit.BUName}. Not retrying.");
                         encounteredCriticalError = true;
                         UpdateTaskLogEntries(taskLogGuid, Interfaces.Enumerations.TaskStatus.Fail, messageCount, currentRetryCount, lockResult.ProcessId, DataType, totalItemCount);
                         break;

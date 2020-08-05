@@ -18,14 +18,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// Creates a new instance of OracleScheduleServiceProxy with the provided connection parameters.
         /// </summary>
         /// <param name="scheduleServiceEndpoint">The schedule service URL</param>
-        /// <param name="timeout">The timespan to use before a timeout is triggered</param>
+        /// <param name="sendTimeout">The timespan to use before a send timeout is triggered</param>
+        /// <param name="receiveTimeout">The timespan to use before a receive timeout is triggered</param>
         /// <param name="username">The username to connect with</param>
         /// <param name="password">The password to connect with</param>
-        public OracleScheduleServiceProxy(string scheduleServiceEndpoint, TimeSpan timeout, string username, string password)
+        public OracleScheduleServiceProxy(string scheduleServiceEndpoint, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password)
         {
             _username = username;
             _password = password;
-            _scheduleServiceClient = new ScheduleServiceClient(scheduleServiceEndpoint, timeout, username, password);
+            _scheduleServiceClient = new ScheduleServiceClient(scheduleServiceEndpoint, sendTimeout, receiveTimeout, username, password);
         }
 
         /// <inheritdoc/>
