@@ -15,12 +15,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// Creates a new instance of OracleScheduleServiceProxy with the provided connection parameters.
         /// </summary>
         /// <param name="genericSoapServiceEndpoint">The SOAP service URL</param>
-        /// <param name="timeout">The timespan to use before a timeout is triggered</param>
+        /// <param name="sendTimeout">The timespan to use before a send timeout is triggered</param>
+        /// <param name="receiveTimeout">The timespan to use before a receive timeout is triggered</param>
         /// <param name="username">The username to connect with</param>
         /// <param name="password">The password to connect with</param>
-        public OracleSoapServiceProxy(string genericSoapServiceEndpoint, TimeSpan timeout, string username, string password)
+        public OracleSoapServiceProxy(string genericSoapServiceEndpoint, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password)
         {
-            _soapServiceClient = new GenericSoapPortTypeClient(genericSoapServiceEndpoint, timeout, username, password);
+            _soapServiceClient = new GenericSoapPortTypeClient(genericSoapServiceEndpoint, sendTimeout, receiveTimeout, username, password);
         }
 
         /// <summary>

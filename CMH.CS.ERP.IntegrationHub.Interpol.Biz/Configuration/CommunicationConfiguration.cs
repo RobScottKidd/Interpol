@@ -7,10 +7,14 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Configuration
     /// </summary>
     public class CommunicationConfiguration
     {
-        /// <summary>
-        /// Specifies how long to wait for the TCP connection to be established
+        /// Specifies how long the write operation has to complete before timing out
         /// </summary>
-        public TimeSpan Timeout { get; set; }
+        public TimeSpan SendTimeout { get; set; }
+
+        /// <summary>
+        /// Specifies how long the application has to receive a message before timing out
+        /// </summary>
+        public TimeSpan ReceiveTimeout { get; set; }
 
         /// <summary>
         /// Specifies the number of times to try to cancel a scheduled job
