@@ -452,8 +452,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.GenericSoapService
     public partial class GenericSoapPortTypeClient : System.ServiceModel.ClientBase<GenericSoapService.IGenericSoapPortType>, GenericSoapService.IGenericSoapPortType
     {
 
-        public GenericSoapPortTypeClient(string endpointUrl, TimeSpan timeout, string username, string password) :
-        base(GenericSoapPortTypeClient.GetBindingForEndpoint(timeout), GenericSoapPortTypeClient.GetEndpointAddress(endpointUrl))
+        public GenericSoapPortTypeClient(string endpointUrl, TimeSpan sendTimeout, TimeSpan receiveTimeout, string username, string password) :
+        base(GenericSoapPortTypeClient.GetBindingForEndpoint(sendTimeout, receiveTimeout), GenericSoapPortTypeClient.GetEndpointAddress(endpointUrl))
         {
             this.ChannelFactory.Credentials.UserName.UserName = username;
             this.ChannelFactory.Credentials.UserName.Password = password;
@@ -466,7 +466,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.GenericSoapService
 
         static partial void ConfigureEndpoint(System.ServiceModel.Description.ServiceEndpoint serviceEndpoint, System.ServiceModel.Description.ClientCredentials clientCredentials);
 
-        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan timeout)
+        private static System.ServiceModel.Channels.Binding GetBindingForEndpoint(TimeSpan sendTimeout, TimeSpan receiveTimeout)
         {
             var encoding = new MtomMessageEncoderBindingElement(new TextMessageEncodingBindingElement()
             {
@@ -485,7 +485,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.GenericSoapService
                 AuthenticationScheme = System.Net.AuthenticationSchemes.Basic,
             };
 
-            var customBinding = new CustomBinding(encoding, transport);
+            var customBinding = new CustomBinding(encoding, transport)
+            {
+                SendTimeout = sendTimeout,
+                ReceiveTimeout = receiveTimeout
+            };
 
             return customBinding;
         }
