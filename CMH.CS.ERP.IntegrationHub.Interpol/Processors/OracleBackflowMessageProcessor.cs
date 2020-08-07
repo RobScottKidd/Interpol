@@ -108,12 +108,24 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     try
                     {
+                        var itemStatus = (item as IEMBRoutingKeyProvider).Status;
+
+                        var itemName = item.GetType().Name;
+
+                        // Hack for AP Invoice. We need to send Invoice Status as the Status Field but Status still needs to go to the
+                        // eventSubType field in the EMB Message.
+                        if (itemName == nameof(APInvoice))
+                        {
+                            APInvoice apInvoice = item as APInvoice;
+                            itemStatus = apInvoice.InvoiceStatus;
+                        }
+
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
                                 eventClass: messageType,
                                 item: item,
                                 source: usableRoutingKey.BusinessUnit.BUAbbreviation,
                                 eventType: itemType.QueueNameFromDataTypeName(),
-                                eventSubType: (item as IEMBRoutingKeyProvider).Status,
+                                eventSubType: itemStatus,
                                 processId: "",
                                 idProvider: _idProvider,
                                 dateTimeProvider: _dateTimeProvider,
