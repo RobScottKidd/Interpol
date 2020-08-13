@@ -29,6 +29,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration
         public DayOfWeek[] DaysOfWeek { get; set; }
 
         /// <summary>
+        /// Specifies the maximum time between the start and end date of a report before it gets split into multiple reports
+        /// </summary>
+        public TimeSpan MaximumReportInterval { get; set; }
+
+        /// <summary>
         /// Defines the time period to sleep between each scheduled run
         /// Measured in milliseconds (ms)
         /// </summary>

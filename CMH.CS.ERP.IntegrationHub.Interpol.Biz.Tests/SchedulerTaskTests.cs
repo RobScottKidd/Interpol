@@ -33,6 +33,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         private IEnumerable<IOracleBackflowPostProcessor<object>> backflowPostProcessors;
         private IEnumerable<ReportTaskDetail> reportTaskDetails;
         private IEnumerable<IProcessingResult<APInvoice>> processingResult;
+        private IScheduleConfiguration schedule;
 
         [SetUp]
         public void Setup()
@@ -49,6 +50,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             taskLogRepo = A.Fake<ITaskLogRepository<TaskLog>>();
             backflowProcessor = A.Fake<IOracleBackflowProcessor<object>>();
             backflowPostProcessors = A.Fake<IEnumerable<IOracleBackflowPostProcessor<object>>>();
+            schedule = A.Fake<IScheduleConfiguration>();
 
             config.Exclusions = new Exclusion[] { new Exclusion() { DataType = "supplier", ExcludedBUs = new[] { "fredsbu" } } };
             config.PublishRetryCount = 3;
@@ -79,7 +81,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         public void DetermineStartDate_TestMinValue()
         {
             var minStart = new DateTime(2020, 1, 1);
-            var config = A.Fake<IInterpolConfiguration>(builder => builder.ConfigureFake(cfg => { cfg.MinimumAllowedReportStartDate = minStart; }));
+            config.MinimumAllowedReportStartDate = minStart;
                
             var schedulerTask = new SchedulerTask<object>(gateway, logger, exporter, config, 
                 cache, dateTimeProvider, instanceKeyProvider, reportDetailRepo, buDataTypeLockRepo, 
@@ -94,7 +96,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         public void DetermineStartDate_ReturnsSameStart()
         {
             var minStart = new DateTime(2020, 1, 1);
-            var config = A.Fake<IInterpolConfiguration>();
             config.MinimumAllowedReportStartDate = minStart;
 
             var schedulerTask = new SchedulerTask<object>(gateway, logger, exporter, config,
@@ -120,7 +121,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         {
             var startDate = DateTime.UtcNow.AddDays(-1);
             var maxInterval = new TimeSpan(10, 0, 0);
-            config.MaximumReportInterval = maxInterval;
+            schedule.MaximumReportInterval = maxInterval;
 
             A.CallTo(() => dateTimeProvider.CurrentTime)
                 .Returns(DateTime.MaxValue);
@@ -136,7 +137,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                     {
                         ReportEndDateTime = startDate
                     }
-                });
+                },
+                schedule);
 
             Assert.LessOrEqual(fixedEnd, startDate + maxInterval);
         }
@@ -147,7 +149,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             int hourDiff = 2;
             var startDate = DateTime.UtcNow.AddHours(-hourDiff);
             var maxInterval = new TimeSpan(10, 0, 0);
-            config.MaximumReportInterval = maxInterval;
+            schedule.MaximumReportInterval = maxInterval;
 
             A.CallTo(() => dateTimeProvider.CurrentTime)
                 .Returns(DateTime.UtcNow);
@@ -164,7 +166,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                         ReportStartDateTime = startDate,
                         ReportEndDateTime = startDate + maxInterval
                     }
-                });
+                },
+                schedule);
 
             Assert.Less(fixedEnd, startDate + maxInterval);
         }
@@ -176,7 +179,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).MustHaveHappened();
@@ -199,7 +202,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).MustHaveHappened();
@@ -222,7 +225,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).MustHaveHappened();
@@ -245,7 +248,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
             Assert.That(tested, Throws.TypeOf<Exception>());
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
@@ -270,7 +273,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).MustHaveHappened();
@@ -294,7 +297,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).MustHaveHappened();
@@ -318,7 +321,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
 
-            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
             Assert.That(tested, Throws.TypeOf<TaskCanceledException>());
 
             A.CallTo(() => taskLogRepo.Insert(A<TaskLog>.Ignored)).MustHaveHappened();
@@ -342,7 +345,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
             A.CallTo(() => taskLogRepo.GetJobIdWithUnknownStatus(A<DataTypes>.Ignored, A<string>.Ignored)).Returns(new List<string>());
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).Returns(1);
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.GetLastSuccessReportEnd(A<DataTypes>.Ignored, A<string>.Ignored)).MustHaveHappened();
@@ -366,7 +369,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         {
             var schedulerTask = SetupRunTest();
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(null);
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.GetLastSuccessReportEnd(A<DataTypes>.Ignored, A<string>.Ignored)).MustNotHaveHappened();
@@ -392,7 +395,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => backflowProcessor.ProcessItems(A<string>.Ignored, A<string>.Ignored)).Throws(new DbRowLockException("expected exception"));
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).Returns(1);
 
-            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            async Task tested() => await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
             Assert.That(tested, Throws.TypeOf<TaskCanceledException>());
 
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
@@ -419,7 +422,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(new RowLockResult());
             A.CallTo(() => taskLogRepo.GetJobIdWithUnknownStatus(A<DataTypes>.Ignored, A<string>.Ignored)).Returns(new List<string>(){ "123", "123"});
             A.CallTo(() => reportDetailRepo.Insert(A<ReportTaskDetail>.Ignored)).Returns(1);
-            await schedulerTask.Run(new CancellationToken(), 1, 5000);
+            await schedulerTask.Run(new CancellationToken(), 1, 5000, schedule);
 
             A.CallTo(() => buDataTypeLockRepo.LockRowForPolling(A<string>.Ignored, A<DataTypes>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
             A.CallTo(() => reportDetailRepo.GetLastSuccessReportEnd(A<DataTypes>.Ignored, A<string>.Ignored)).MustHaveHappened();

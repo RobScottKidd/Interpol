@@ -15,10 +15,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
         public InstanceKeyProvider(IEnvironmentProvider envProvider)
         {
             _envProvider = envProvider;
+            ServiceType = "INTERPOL";
         }
 
+        /// <inheritdoc/>
         public Guid InstanceKey => instanceKey ?? (instanceKey = GetKey()).Value;
 
+        /// <inheritdoc/>
         public string ServiceType { get; set; }
 
         private Guid GetKey()
