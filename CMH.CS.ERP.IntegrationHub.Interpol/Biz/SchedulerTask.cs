@@ -18,6 +18,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// <summary>
     /// Implementation for ISchedulerTask
     /// </summary>
+    /// <typeparam name="T">The canonical model that this task handles</typeparam>
     public class SchedulerTask<T> : ISchedulerTask
     {
         private readonly IInterpolOracleGateway _gateway;
@@ -38,9 +39,18 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <summary>
         /// Ctor for the SchedulerTask
         /// </summary>
-        /// <param name="businessUnit">BU the schedule applies to</param>
-        /// <param name="dataType">data type the schedule applies to</param>
-        /// <param name="connector">message bus connector DI'ed in</param>
+        /// <param name="gateway">The interface for communicating with Oracle services</param>
+        /// <param name="logger">The logger to use</param>
+        /// <param name="exporter">The utility for exporting files</param>
+        /// <param name="config">The configuration for INTERPOL</param>
+        /// <param name="cache">The cache to use</param>
+        /// <param name="dateTimeProvider">The utility for retrieving the current time</param>
+        /// <param name="instanceKeyProvider">The utility for retrieving the current instance identifier</param>
+        /// <param name="reportTaskDetailRepo">The repository for task details</param>
+        /// <param name="buDataTypeLockRepo">The repository for maintaining BU/datatype locking/synchronization</param>
+        /// <param name="taskLogRepo">The repository for the task log</param>
+        /// <param name="backflowProcessor">The backflow processor for the canonical model this task handles</param>
+        /// <param name="postProcessors">The post-processors for the canonical model this task handles</param>
         public SchedulerTask(
             IInterpolOracleGateway gateway,
             ILogger<SchedulerTask<T>> logger,
@@ -62,8 +72,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _cache = cache;
             _dateTimeProvider = dateTimeProvider;
             _instanceKeyProvider = instanceKeyProvider;
-            // indicate we're running the interpol service
-            _instanceKeyProvider.ServiceType = "INTERPOL";
             _config = config;
             _reportTaskDetailRepo = reportTaskDetailRepo;
             _buDataTypeLockRepo = buDataTypeLockRepo;
@@ -73,16 +81,14 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _lockDuration = config.RowLockTimeout;
         }
 
+        /// <inheritdoc/>
         public DataTypes DataType { get; set; }
 
+        /// <inheritdoc/>
         public IBusinessUnit BusinessUnit { get; set; } 
 
-        /// <summary>
-        /// Runs the task that publishes an event message to the message bus
-        /// </summary>
-        /// <param name="token"></param>
-        /// <returns></returns>
-        public async Task Run(CancellationToken token, int retryCount, int retryDelay)
+        /// <inheritdoc/>
+        public async Task Run(CancellationToken token, int retryCount, int retryDelay, IScheduleConfiguration schedule)
         {
             var items = _cache.BusinessUnits();
             _logger.LogInformation($"Task for {BusinessUnit.BUName}.{DataType} running"); 
@@ -103,8 +109,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             var results = _reportTaskDetailRepo.GetLastSuccessReportEnd(DataType, queryBu);
             // we want to limit the furthest start time to the config value
             var startDate = DetermineStartDate(results); 
-            var endDate = DetermineEndDate(results);
-            bool includeEndDate = DetermineIncludeEndDate(startDate, endDate);
+            var endDate = DetermineEndDate(results, schedule);
+            bool includeEndDate = DetermineIncludeEndDate(startDate, endDate, schedule);
 
             var taskLogGuid = InsertTaskLogEntries(queryBu, startDate, endDate, lockResult.ProcessId);
             if (taskLogGuid == default)
@@ -268,7 +274,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <summary>
         /// Determins the minimum start datetime of a report
         /// </summary>
-        /// <param name="lastSuccess">Last time the report succeeded</param>
+        /// <param name="results">Last time the report succeeded</param>
         /// <returns></returns>
         public DateTime DetermineStartDate(IEnumerable<IReportTaskDetail> results)
         {   
@@ -289,21 +295,23 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <summary>
         /// Determines the end datetime of a report
         /// </summary>
-        /// <param name="startDate">Start time of the report</param>
-        /// <returns></returns>
-        public DateTime DetermineEndDate(IEnumerable<IReportTaskDetail> results)
+        /// <param name="results">Start time of the report</param>
+        /// <param name="schedule">The schedule configuration to use</param>
+        /// <returns>The DateTime </returns>
+        public DateTime DetermineEndDate(IEnumerable<IReportTaskDetail> results, IScheduleConfiguration schedule)
         {
             var requestedEnd = _dateTimeProvider.CurrentTime.ToUniversalTime();
             DateTime maxEnd;
+            var maxReportInterval = schedule.MaximumReportInterval;
 
             if (results == null || results.Count() == 0)
             {
-                maxEnd = _config.MinimumAllowedReportStartDate + _config.MaximumReportInterval;
+                maxEnd = _config.MinimumAllowedReportStartDate + maxReportInterval;
             }
             // we have a success with no items
             else //if (results.Count() == 1) 
             {
-                maxEnd = results.Max((success) => success.ReportEndDateTime) + _config.MaximumReportInterval;
+                maxEnd = results.Max((success) => success.ReportEndDateTime) + maxReportInterval;
             }
 
             return requestedEnd > maxEnd
@@ -316,11 +324,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// </summary>
         /// <param name="start">The polling period start date</param>
         /// <param name="end">The polling period end date</param>
-        /// <returns></returns>
-        public bool DetermineIncludeEndDate(DateTime start, DateTime end)
-        {
-            return end - start >= _config.MaximumReportInterval;
-        }
+        /// <param name="schedule">The schedule configuration to use</param>
+        /// <returns>True iff the elapsed time between the start and end dates exceeds the schedule's maximum reporting interval</returns>
+        private bool DetermineIncludeEndDate(DateTime start, DateTime end, IScheduleConfiguration schedule) => end - start >= schedule.MaximumReportInterval;
 
         private async void SaveFile(string fileContents)
         {

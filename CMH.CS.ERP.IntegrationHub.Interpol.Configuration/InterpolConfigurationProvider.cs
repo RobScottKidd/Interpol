@@ -82,7 +82,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Configuration
                     DataTypes = MapDataTypes(dbSchedule),
                     DaysOfWeek = MapDaysOfWeek(dbSchedule),
                     Name = dbSchedule.InstanceKey.ToString(),
-                    PollingIntervalMilliseconds = dbSchedule.PollingIntervalMilliseconds
+                    PollingIntervalMilliseconds = dbSchedule.PollingIntervalMilliseconds,
+                    MaximumReportInterval = TimeSpan.FromMilliseconds(dbSchedule.MaximumReportInterval)
                 };
                 schedules.Add(schedule);
             }

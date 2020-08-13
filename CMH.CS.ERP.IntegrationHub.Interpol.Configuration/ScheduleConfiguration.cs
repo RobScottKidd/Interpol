@@ -22,6 +22,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Configuration
         public DayOfWeek[] DaysOfWeek { get; set; }
 
         /// <inheritdoc/>
+        public TimeSpan MaximumReportInterval { get; set; }
+
+        /// <inheritdoc/>
         public int? PollingIntervalMilliseconds { get; set; }
 
         /// <inheritdoc/>
