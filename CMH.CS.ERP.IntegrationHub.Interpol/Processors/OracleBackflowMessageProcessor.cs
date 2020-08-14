@@ -117,7 +117,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         if (itemName == nameof(APInvoice))
                         {
                             APInvoice apInvoice = item as APInvoice;
-                            itemStatus = apInvoice.InvoiceStatus;
+                            itemStatus = apInvoice.Status;
+                            apInvoice.Status = apInvoice.InvoiceStatus;
                         }
 
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
