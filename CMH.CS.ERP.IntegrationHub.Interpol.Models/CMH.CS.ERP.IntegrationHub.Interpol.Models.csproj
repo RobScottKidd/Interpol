@@ -8,9 +8,9 @@
     <DocumentationFile>..\..\..\XML-COMMENT\CMH.CSS.ERP.IntegrationHub.CanonicalModels.xml</DocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup> 
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.145-development" /> 
-    <PackageReference Include="FluentValidation" Version="9.0.1" />
+  <ItemGroup>  
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.148-development" /> 
+     <PackageReference Include="FluentValidation" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>
