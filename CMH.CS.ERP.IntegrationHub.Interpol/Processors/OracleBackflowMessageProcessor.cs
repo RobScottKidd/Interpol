@@ -62,12 +62,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             };
         }
 
-        /// <summary>
-        /// Removes configured exclusions from the list of routing keys generated
-        /// </summary>
-        /// <param name="datatype">The data type of the object</param>
-        /// <param name="routingkeys">The list of routing keys</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public IEMBRoutingKeyInfo[] RemoveExclusions(IExclusion[] exclusions, string datatype, IEMBRoutingKeyInfo[] routingkeys)
         {
             // handle exclusions
@@ -77,11 +72,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             return routingkeys.Where(key => busToExclude == null ? true : !busToExclude.Contains(key.BusinessUnit.BUName)).ToArray();
         }
 
-        /// <summary>
-        /// Loops through routing keys to send messages for each. Calls SendMessage()
-        /// </summary>
-        /// <param name="item">The object which will be the payload</param>
-        /// <param name="routingkeys">The list of routing keys</param>
+        /// <inheritdoc/>
         public int SendMessagesToAllBUs(object item, IEMBRoutingKeyInfo[] routingkeys, CMH.Common.Events.Models.EventClass messageType, string itemType, string eventVersion)
         {
             int messageCount = 0;
@@ -93,11 +84,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             return messageCount;
         }
 
-        /// <summary>
-        /// Sends a single
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="usableRoutingKey"></param>
+        /// <inheritdoc/>
         public int SendMessage(object item, IEMBRoutingKeyInfo usableRoutingKey, CMH.Common.Events.Models.EventClass messageType, string itemType, string eventVersion)
         {
             if (usableRoutingKey != null)
@@ -108,13 +95,25 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     try
                     {
+                        var itemStatus = (item as IEMBRoutingKeyProvider).Status;
+                        var itemName = item.GetType().Name;
+
+                        // Hack for AP Invoice. We need to send Invoice Status as the Status Field but Status still needs to go to the
+                        // eventSubType field in the EMB Message.
+                        if (itemName == nameof(APInvoice))
+                        {
+                            APInvoice apInvoice = item as APInvoice;
+                            itemStatus = apInvoice.Status;
+                            apInvoice.Status = apInvoice.InvoiceStatus;
+                        }
+
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
                                 eventClass: messageType,
                                 item: item,
                                 source: usableRoutingKey.BusinessUnit.BUAbbreviation,
                                 eventType: itemType.QueueNameFromDataTypeName(),
-                                eventSubType: (item as IEMBRoutingKeyProvider).Status,
-                                processId: "",
+                                eventSubType: itemStatus,
+                                processId: string.Empty,
                                 idProvider: _idProvider,
                                 dateTimeProvider: _dateTimeProvider,
                                 version: eventVersion
@@ -162,6 +161,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             return 1;
         }
 
+        /// <inheritdoc/>
         public int Process(object[] items, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             // look at next release time minus 1 min for overlap; smaller chance of being picked up by another process
@@ -267,7 +267,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="dataType"></param>
         /// <param name="processId"></param>
         /// <returns>true if successful, false if not</returns>
-        public bool CheckLockTimeoutSuccessful(string bu, string dataType, Guid processId)
+        private bool CheckLockTimeoutSuccessful(string bu, string dataType, Guid processId)
         {
             bool isSuccessful = true;
             var lockDuration = _config.RowLockTimeout;
@@ -292,8 +292,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             } 
             return isSuccessful;
         }
-   
-        public void ValidateMessage(IEventMessage<object> eventMessage)
+
+        /// <summary>
+        /// Throws InvalidMessageException if the provided message is not valid.
+        /// </summary>
+        /// <param name="eventMessage">The message to validate</param>
+        private void ValidateMessage(IEventMessage<object> eventMessage)
         {
             if (string.IsNullOrEmpty(eventMessage.EventSubType))
             {

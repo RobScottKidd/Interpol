@@ -284,7 +284,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                         if ((DateTime.Now - startWaitTime).TotalMinutes >= waitDuration)
                         {
-                            _logger.LogWarning($"Job {jobInstanceId} has been in a wait state for over 15 minutes.");
+                            _logger.LogWarning($"Job {jobInstanceId} has been in a wait state for over 15 minutes, {businessUnit}:{datatype}");
                             await TryCancelReportJob(scheduleService, jobInstanceId);
                             throw new ReportJobCanceledException("There was an error getting the report job status. Job in wait state for over 15 minutes.");
                         }
