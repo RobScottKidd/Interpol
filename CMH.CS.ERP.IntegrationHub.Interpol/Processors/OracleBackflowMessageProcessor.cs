@@ -87,7 +87,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             int messageCount = 0;
             foreach (var key in routingkeys)
             {
-                messageCount +=  SendMessage(item, key, messageType, itemType, eventVersion);
+                messageCount += SendMessage(item, key, messageType, itemType, eventVersion);
             }
 
             return messageCount;
@@ -209,6 +209,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         itemType = alt.TreatAsDataType;
                     }
+                    // If we used the alternate routing extension, use the base type that was extended
+                    else if (item is IAlternateRoutingBU altBu)
+                    {
+                        itemType = altBu.BaseVerticalType;
+                    }
                     else
                     {
                         itemType = item.GetType();
@@ -242,11 +247,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnit.BUName.CleanBUName());
                         if (applicableKey != null)
                         {
-                           messageCount  += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
+                            messageCount += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
                         }
                         else
                         {
-                             _logger.LogInformation($"Not sending { item.DataTypeName() } item as its routing key { routingKeys.First().RoutingKey } is filtered out. BU Name { businessUnit.BUName.CleanBUName() }");
+                            _logger.LogInformation($"Not sending { item.DataTypeName() } item as its routing key { routingKeys.First().RoutingKey } is filtered out. BU Name { businessUnit.BUName.CleanBUName() }");
                         }
                     }
                 }

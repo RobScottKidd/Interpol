@@ -36,10 +36,14 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="processId">Lock ID of current running thread</param>
         public virtual int Process(IProcessingResultSet<T> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
-            object[] proccessedResults = processingResults.ProcessedItems.Select((pi) => pi.ProcessedItem as object).ToArray(); 
-            object[] unParsableResults = processingResults.UnparsableItems.Select((pi) => pi.ProcessedItem as object).ToArray();
-
-           var messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
+            var proccessedResults = processingResults.ProcessedItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+            var unParsableResults = processingResults.UnparsableItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+            
+            var messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
             _messageProcessor.Process(unParsableResults, businessUnit, lockReleaseTime, processId);
 
             return messageCount;
