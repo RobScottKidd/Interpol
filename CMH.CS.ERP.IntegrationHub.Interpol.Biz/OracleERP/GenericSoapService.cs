@@ -483,6 +483,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.GenericSoapService
                 MaxBufferSize = int.MaxValue,
                 MaxReceivedMessageSize = int.MaxValue,
                 AuthenticationScheme = System.Net.AuthenticationSchemes.Basic,
+                KeepAliveEnabled = false
             };
 
             var customBinding = new CustomBinding(encoding, transport)
