@@ -69,7 +69,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             var exclusionbyDataType = exclusions.FirstOrDefault(ex => ex.DataType == datatype);
             var busToExclude = exclusionbyDataType?.ExcludedBUs ?? new string[0];
 
-            return routingkeys.Where(key => busToExclude == null ? true : !busToExclude.Contains(key.BusinessUnit.BUName)).ToArray();
+            return routingkeys.Where(key => busToExclude == null || !busToExclude.Contains(key.BusinessUnit.BUName)).ToArray();
         }
 
         /// <inheritdoc/>
