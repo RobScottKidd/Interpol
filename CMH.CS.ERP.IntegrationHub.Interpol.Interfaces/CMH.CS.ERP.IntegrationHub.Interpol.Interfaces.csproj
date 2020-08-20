@@ -10,7 +10,7 @@
 
   <ItemGroup> 
     <PackageReference Include="CMH.Common.Events" Version="1.0.0.28-develop" />
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.154-IH670apinvoicessendi" />
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.160-IH670apinvoicessendi" />
   </ItemGroup>
 
 </Project>
