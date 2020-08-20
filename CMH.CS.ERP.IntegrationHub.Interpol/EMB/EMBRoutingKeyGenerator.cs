@@ -32,7 +32,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                     .Select(_bu => new EMBRoutingKeyInfo()
                     {
                         BusinessUnit = altModel.AlternateBU,
-                        RoutingKey = $"{altModel.AlternateBU.BUName.CleanBUName()}.erp.{altModel.BaseVerticalType.Name}"
+                        RoutingKey = $"{altModel.AlternateBU.BUName.CleanBUName()}.erp.{altModel.BaseVerticalType.Name.QueueNameFromDataTypeName()}"
                     })
                     .ToArray();
             }
