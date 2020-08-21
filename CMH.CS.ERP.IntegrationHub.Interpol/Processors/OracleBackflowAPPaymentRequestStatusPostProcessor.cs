@@ -35,7 +35,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
             processingResults.ProcessedItems = processingResults?.ProcessedItems?.Select(x =>
             {
-                if (x?.ProcessedItem?.Guid != null && buLookup.TryGetValue(new Guid(x.ProcessedItem.Guid), out IBusinessUnit outValue))
+                if (!string.IsNullOrWhiteSpace(x?.ProcessedItem?.Guid) && buLookup.TryGetValue(new Guid(x.ProcessedItem.Guid), out IBusinessUnit outValue))
                 {
                     return new ProcessingResult<APPaymentRequestStatusMessage>()
                     {
