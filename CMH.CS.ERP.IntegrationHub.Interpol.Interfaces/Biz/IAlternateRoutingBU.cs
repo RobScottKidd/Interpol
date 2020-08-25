@@ -10,6 +10,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
         /// </summary>
         IBusinessUnit AlternateBU { get; set; }
 
-        Type BaseVerticalType { get; set; }
+        Type BaseVerticalType { get; }
     }
 }

@@ -14,11 +14,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <summary>
         /// The name of the base vertical that this class extends
         /// </summary>
-        public Type BaseVerticalType { get; set; }
+        public Type BaseVerticalType => typeof(CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage);
 
-        public APPaymentRequestStatusMessageAlternateRouting(CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage request)
+        public APPaymentRequestStatusMessageAlternateRouting(CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage paymentRequestStatusMessage)
         {
-            SetAlternateRoutingVerticalProperties.SetProperties(request, this);
+            this.SetProperties(paymentRequestStatusMessage);
         }
     }
 }
