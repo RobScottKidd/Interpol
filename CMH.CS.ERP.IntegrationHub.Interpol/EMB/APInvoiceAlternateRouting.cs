@@ -1,7 +1,7 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
+using Newtonsoft.Json;
 using System;
-using System.Text.Json.Serialization;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
