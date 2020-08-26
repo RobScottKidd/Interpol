@@ -129,6 +129,17 @@
       "DocumentId": "ap-invoices-doc-id-1"
     },
     {
+      "Content": "<InvoiceHeaders><Guid>151a9748-82eb-44e1-977e-d01be6718ebf</Guid><Status>APPROVED</Status><BusinessUnit>Corporate BU</BusinessUnit><Source>REFUND</Source><InvoiceNumber>Refund_Demo_16</InvoiceNumber><InvoiceAmount>64.44</InvoiceAmount><SupplierName xsi:nil=\"true\"/><SupplierNumber xsi:nil=\"true\"/><SupplierSite xsi:nil=\"true\"/><InvoiceCurrency>USD</InvoiceCurrency><PaymentCurrency>USD</PaymentCurrency><Description>REFUND TEST 55</Description><Group xsi:nil=\"true\"/><InvoiceType>PAYMENT REQUEST</InvoiceType><LegalEntity>CMH Services, Inc.</LegalEntity><PaymentTerms>Immediate</PaymentTerms><TermsDate>2019-06-24</TermsDate><AccountingDate>2019-07-10</AccountingDate><PaymentMethod xsi:nil=\"true\"/><PayGroup xsi:nil=\"true\"/><PayAlone>N</PayAlone><ConversionRateType xsi:nil=\"true\"/><ConversionDate xsi:nil=\"true\"/><ConversionRate xsi:nil=\"true\"/><PaymentPriority xsi:nil=\"true\"/><OverrideWithholdingTaxGroup xsi:nil=\"true\"/><CheckName xsi:nil=\"true\"/><MemoLine xsi:nil=\"true\"/><SubMemoLine xsi:nil=\"true\"/><BusinessCategory xsi:nil=\"true\"/><RetailerNumber xsi:nil=\"true\"/><InvoiceId>18005</InvoiceId><InvoiceDate>2019-06-24</InvoiceDate><invoiceId>18005</invoiceId><GUID xsi:nil=\"true\"/><InvoiceLines><LineNumber>1</LineNumber><LineType>ITEM</LineType><Amount>64.44</Amount><InvoiceQuantity xsi:nil=\"true\"/><UnitPrice xsi:nil=\"true\"/><UnitOfMeasure xsi:nil=\"true\"/><Description>ONE TIME PAYMENT LINES</Description><DistributionCombination>E602-L99999A900103-C9999P999-E99999999-99999</DistributionCombination><DistributionSet xsi:nil=\"true\"/><WithholdingTaxGroup xsi:nil=\"true\"/><TrackasFixedAsset>N</TrackasFixedAsset><FixedAssetBookTypeCode xsi:nil=\"true\"/><OracleProjectNumber xsi:nil=\"true\"/><OracleTaskNumber xsi:nil=\"true\"/><BusinessCategory>VMF Escrow Refund</BusinessCategory><Tattoo>FREEDOM</Tattoo><MasterDealerNumber>2501</MasterDealerNumber><InvestorNumber>13</InvestorNumber><LenderCode>VM00</LenderCode><DeedofTrust>1</DeedofTrust><ProductNumber>1</ProductNumber><LoanType>C</LoanType><LotNumber>1</LotNumber><DealInvoiceDate>43101</DealInvoiceDate><InvestorType>W</InvestorType><ApplicationId xsi:nil=\"true\"/><PoNumber xsi:nil=\"true\"/><PolicyNumber xsi:nil=\"true\"/><ShortSerialNumber xsi:nil=\"true\"/><PartsInvoice xsi:nil=\"true\"/><PendingNumber xsi:nil=\"true\"/><LinkId xsi:nil=\"true\"/><EmployeeNumber xsi:nil=\"true\"/><LoanNumber xsi:nil=\"true\"/><LoanTransferNumber xsi:nil=\"true\"/><PlantNumber xsi:nil=\"true\"/><InvoiceId>18005</InvoiceId></InvoiceLines></InvoiceHeaders>",
+      "FileName": "AP_Payment_Request_Extract_1.xml",
+      "ContentType": "text/xml",
+      "DocumentTitle": "AP Payment Test #1",
+      "DocumentAuthor": "Caroline Lee",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "AP Test #1",
+      "DocumentId": "ap-payments-doc-id-1"
+    },
+    {
       "Content": "<Header><Version>v1.2</Version><Guid>151a9748-82eb-44e1-977e-d01be6718ebf</Guid><TransactionDate>2020-02-21</TransactionDate><TransactionNumber>2079226_21st_009</TransactionNumber><LedgerName>Clayton GAAP USD</LedgerName><Status>CREATED</Status><Subledger>Retail</Subledger><AhAccountingDate>2020-02-21</AhAccountingDate></Header>",
       "FileName": "AccountingHub_Feedback_Extract_1.xml",
       "ContentType": "text/xml",
@@ -264,6 +275,32 @@
                       {
                         "Name": "dID",
                         "Value": "ap-invoices-doc-id-1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "Filename": "Corporate BU_AP_Payment_Request_Extract_1.xml",
+      "Response": {
+        "WebKey": "cs",
+        "Service": {
+          "IdcService": "GET_SEARCH_RESULTS",
+          "Document": {
+            "ResultSet": [
+              {
+                "Name": "SearchResults",
+                "Row": [
+                  {
+                    "Field": [
+                      {
+                        "Name": "dID",
+                        "Value": "ap-payments-doc-id-1"
                       }
                     ]
                   }
