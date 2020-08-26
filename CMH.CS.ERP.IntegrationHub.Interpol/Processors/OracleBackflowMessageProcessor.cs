@@ -119,6 +119,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                             APInvoice apInvoice = item as APInvoice;
                             itemStatus = apInvoice.Status;
                             apInvoice.Status = apInvoice.InvoiceStatus;
+                            
+                            // Follow-up Hack for replicating Guid to line fields
+                            if (apInvoice.InvoiceLines != null && !string.IsNullOrEmpty(apInvoice.Guid))
+                            {
+                                foreach (var line in apInvoice.InvoiceLines)
+                                {
+                                    line.Guid = apInvoice.Guid;
+                                }
+                            }
                         }
 
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
