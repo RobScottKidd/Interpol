@@ -62,42 +62,29 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             };
         }
 
-        /// <summary>
-        /// Removes configured exclusions from the list of routing keys generated
-        /// </summary>
-        /// <param name="datatype">The data type of the object</param>
-        /// <param name="routingkeys">The list of routing keys</param>
-        /// <returns></returns>
+        /// <inheritdoc/>
         public IEMBRoutingKeyInfo[] RemoveExclusions(IExclusion[] exclusions, string datatype, IEMBRoutingKeyInfo[] routingkeys)
         {
             // handle exclusions
             var exclusionbyDataType = exclusions.FirstOrDefault(ex => ex.DataType == datatype);
             var busToExclude = exclusionbyDataType?.ExcludedBUs ?? new string[0];
 
-            return routingkeys.Where(key => busToExclude == null ? true : !busToExclude.Contains(key.BusinessUnit.BUName)).ToArray();
+            return routingkeys.Where(key => busToExclude == null || !busToExclude.Contains(key.BusinessUnit.BUName)).ToArray();
         }
 
-        /// <summary>
-        /// Loops through routing keys to send messages for each. Calls SendMessage()
-        /// </summary>
-        /// <param name="item">The object which will be the payload</param>
-        /// <param name="routingkeys">The list of routing keys</param>
+        /// <inheritdoc/>
         public int SendMessagesToAllBUs(object item, IEMBRoutingKeyInfo[] routingkeys, CMH.Common.Events.Models.EventClass messageType, string itemType, string eventVersion)
         {
             int messageCount = 0;
             foreach (var key in routingkeys)
             {
-                messageCount +=  SendMessage(item, key, messageType, itemType, eventVersion);
+                messageCount += SendMessage(item, key, messageType, itemType, eventVersion);
             }
 
             return messageCount;
         }
 
-        /// <summary>
-        /// Sends a single
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="usableRoutingKey"></param>
+        /// <inheritdoc/>
         public int SendMessage(object item, IEMBRoutingKeyInfo usableRoutingKey, CMH.Common.Events.Models.EventClass messageType, string itemType, string eventVersion)
         {
             if (usableRoutingKey != null)
@@ -109,7 +96,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     try
                     {
                         var itemStatus = (item as IEMBRoutingKeyProvider).Status;
-
                         var itemName = item.GetType().Name;
 
                         // Hack for AP Invoice. We need to send Invoice Status as the Status Field but Status still needs to go to the
@@ -119,6 +105,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                             APInvoice apInvoice = item as APInvoice;
                             itemStatus = apInvoice.Status;
                             apInvoice.Status = apInvoice.InvoiceStatus;
+                            
+                            // Follow-up Hack for replicating Guid to line fields
+                            if (apInvoice.InvoiceLines != null && !string.IsNullOrEmpty(apInvoice.Guid))
+                            {
+                                foreach (var line in apInvoice.InvoiceLines)
+                                {
+                                    line.Guid = apInvoice.Guid;
+                                }
+                            }
                         }
 
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
@@ -127,7 +122,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                                 source: usableRoutingKey.BusinessUnit.BUAbbreviation,
                                 eventType: itemType.QueueNameFromDataTypeName(),
                                 eventSubType: itemStatus,
-                                processId: "",
+                                processId: string.Empty,
                                 idProvider: _idProvider,
                                 dateTimeProvider: _dateTimeProvider,
                                 version: eventVersion
@@ -175,6 +170,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             return 1;
         }
 
+        /// <inheritdoc/>
         public int Process(object[] items, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             // look at next release time minus 1 min for overlap; smaller chance of being picked up by another process
@@ -222,6 +218,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         itemType = alt.TreatAsDataType;
                     }
+                    // If we used the alternate routing extension, use the base type that was extended
+                    else if (item is IAlternateRoutingBU altBu)
+                    {
+                        itemType = altBu.BaseVerticalType;
+                    }
                     else
                     {
                         itemType = item.GetType();
@@ -255,11 +256,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnit.BUName.CleanBUName());
                         if (applicableKey != null)
                         {
-                           messageCount  += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
+                            messageCount += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
                         }
                         else
                         {
-                             _logger.LogInformation($"Not sending { item.DataTypeName() } item as its routing key { routingKeys.First().RoutingKey } is filtered out. BU Name { businessUnit.BUName.CleanBUName() }");
+                            _logger.LogInformation($"Not sending { item.DataTypeName() } item as its routing key { routingKeys.First().RoutingKey } is filtered out. BU Name { businessUnit.BUName.CleanBUName() }");
                         }
                     }
                 }
@@ -275,7 +276,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="dataType"></param>
         /// <param name="processId"></param>
         /// <returns>true if successful, false if not</returns>
-        public bool CheckLockTimeoutSuccessful(string bu, string dataType, Guid processId)
+        private bool CheckLockTimeoutSuccessful(string bu, string dataType, Guid processId)
         {
             bool isSuccessful = true;
             var lockDuration = _config.RowLockTimeout;
@@ -300,8 +301,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             } 
             return isSuccessful;
         }
-   
-        public void ValidateMessage(IEventMessage<object> eventMessage)
+
+        /// <summary>
+        /// Throws InvalidMessageException if the provided message is not valid.
+        /// </summary>
+        /// <param name="eventMessage">The message to validate</param>
+        private void ValidateMessage(IEventMessage<object> eventMessage)
         {
             if (string.IsNullOrEmpty(eventMessage.EventSubType))
             {
