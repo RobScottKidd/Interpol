@@ -23,6 +23,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const double LOCKTIME_OVERLAP = -1;
         private DateTime nextReleaseTime;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public OracleBackflowAggregateMessageProcessor(
             IMessageBusConnector connector,
             IInterpolConfiguration config,
@@ -68,6 +71,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         routingKey = $"hbg.erp.{dataType}";
                     }
+
+                    _logger.LogInformation($"Aggregated messages for this GUID into a single Rabbit Message: {item.Guid}");
 
                     SendMessage(item, routingKey, EventClass.Notice, typeof(T).Name);
                     CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);

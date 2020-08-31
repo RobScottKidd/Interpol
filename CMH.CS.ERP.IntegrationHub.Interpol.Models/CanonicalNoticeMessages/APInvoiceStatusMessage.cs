@@ -1,6 +1,8 @@
-﻿namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
+﻿using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
+
+namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
 {
-    public class APInvoiceStatusMessage
+    public class APInvoiceStatusMessage : IGuidProvider
     {
         public string InvoiceId { get; set; }
 

@@ -9,5 +9,7 @@
         T[] Messages { get; set; }
 
         string Version { get; }
+
+        string Guid { get; set; }
     }
 }

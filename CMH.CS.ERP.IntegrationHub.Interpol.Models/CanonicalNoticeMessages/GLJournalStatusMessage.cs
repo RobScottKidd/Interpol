@@ -1,6 +1,10 @@
-﻿namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
+﻿using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
+using Newtonsoft.Json;
+using System.Xml.Serialization;
+
+namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
 {
-    public class GLJournalStatusMessage
+    public class GLJournalStatusMessage : IGuidProvider
     {
         public string JournalGuid { get; set; }
 
@@ -19,5 +23,9 @@
         public string RejectionMessage { get; set; }
 
         public NoticeRejectionDetail[] ListRejectionsDetail { get; set; }
+
+        [JsonIgnore]
+        [XmlIgnore]
+        string IGuidProvider.Guid => JournalGuid;
     }
 }
