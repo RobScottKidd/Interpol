@@ -34,7 +34,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _logger.LogTrace($"Processing Accounting Hub Aggregate Messages. Beginning at { DateTime.UtcNow }");
 
             var proccessedResults = processingResults.ProcessedItems.Select((pi) => pi.ProcessedItem).OrderBy((p) => p.Guid).OrderBy((s) => s.Subledger).ToList();
-            var unParsableResults = processingResults.UnparsableItems.Select((pi) => pi.ProcessedItem as object).ToArray();
+            var unParsableResults = processingResults.UnparsableItems.Select((pi) => pi.ProcessedItem).ToArray();
 
             var aggregateMessages = new List<AccountingHubAggregateMessage>();
 
@@ -49,7 +49,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 _logger.LogTrace($"Guid { g.Item1 } and BU { g.Item2 } contain { matchingItems.Count() } items");
 
                 var highestStatus = proccessedResults.FirstOrDefault((s) => s.Status.ToLower() == HIGHEST_STATUS);
-
                 if (highestStatus != null)
                 {
                     messageStatus = highestStatus.Status;

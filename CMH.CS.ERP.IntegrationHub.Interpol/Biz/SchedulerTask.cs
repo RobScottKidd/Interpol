@@ -153,7 +153,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     }
 
                     _logger.LogInformation($"Successfully parsed { itemCount } items from the Oracle XML file");
-                    _logger.LogInformation($"Unsuccessfully in parsing { badItemCount } items from the Oracle XML file");
+                    _logger.LogInformation($"Unsuccessful in parsing { badItemCount } items from the Oracle XML file");
 
                     if (itemCount > 0 || badItemCount > 0)
                     {

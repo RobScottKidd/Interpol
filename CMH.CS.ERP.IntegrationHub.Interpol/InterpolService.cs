@@ -185,6 +185,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                 .AddTransient<IDateTimeProvider, DateTimeProvider>()
                 .AddTransient<IIDProvider, IDProvider>()
                 .AddTransient<ITaskLogRepository<TaskLog>, TaskLogRepository>()
+                .AddTransient<IBUTrackerRepository, BUTrackerRepository>()
                 .AddTransient<ISqlProvider, SqlProvider>()
                 .AddSingleton<IDataCache, DataCache>()
                 .AddTransient<ISchedulerTaskFactory, SchedulerTaskFactory>()
