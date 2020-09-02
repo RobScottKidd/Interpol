@@ -32,7 +32,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         public override int Process(IProcessingResultSet<APInvoice> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             var allGuids = processingResults?.ProcessedItems
-                            ?.Where(x => !string.IsNullOrWhiteSpace(x?.ProcessedItem?.Guid))
+                            ?.Where(x => Guid.TryParse(x?.ProcessedItem?.Guid, out Guid itemGuid))
                             ?.Select(x => new Guid(x.ProcessedItem.Guid))
                             .ToList();
 
@@ -41,7 +41,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
             processingResults.ProcessedItems = processingResults?.ProcessedItems?.Select(x =>
             {
-                if (!string.IsNullOrWhiteSpace(x?.ProcessedItem?.Guid) && buLookup.TryGetValue(new Guid(x.ProcessedItem.Guid), out IBusinessUnit outValue))
+                if (Guid.TryParse(x?.ProcessedItem?.Guid, out Guid itemGuid) && buLookup.TryGetValue(itemGuid, out IBusinessUnit outValue))
                 {
                     return new ProcessingResult<APInvoice>()
                     {
