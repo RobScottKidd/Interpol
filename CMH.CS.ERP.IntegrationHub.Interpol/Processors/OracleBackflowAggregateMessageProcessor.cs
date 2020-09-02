@@ -23,6 +23,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const double LOCKTIME_OVERLAP = -1;
         private DateTime nextReleaseTime;
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public OracleBackflowAggregateMessageProcessor(
             IMessageBusConnector connector,
             IInterpolConfiguration config,

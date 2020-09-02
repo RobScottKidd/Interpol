@@ -15,6 +15,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
+using Newtonsoft.Json;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
@@ -493,8 +494,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
             AddParametersToRequest(paramGroup, scheduleRequest, startDate, endDate, includeEndDate, businessUnit);
 
-            scheduleRequest.TrySerializeJson(out string result);
-            _logger.LogTrace($"Report Parameter: {result}");
+            //scheduleRequest.TrySerializeJson(Formatting.None, out string result);
+           // _logger.LogTrace($"Report Parameter: {result}");
             _logger.LogInformation("Creating report request");
 
             // make the request, obtain the result
