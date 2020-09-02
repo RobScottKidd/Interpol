@@ -51,7 +51,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 aggregateMessages.Add(new CashManagementAggregateMessage()
                 {
                     Messages = processingResults.ProcessedItems.Select((pi) => pi.ProcessedItem).Where((p) => p.SourceGuid == g.Item1 && p.BusinessUnit == g.Item2).ToArray(),
-                    Status = messageStatus
+                    Status = messageStatus,
+                    Guid = g.ToString()
                 });
 
                 // wiping these out to shorten the search

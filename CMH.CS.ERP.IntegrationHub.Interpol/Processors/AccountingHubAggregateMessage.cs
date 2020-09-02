@@ -12,5 +12,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         public string Status { get; set; }
 
         public string Version => Messages[0].Version;
+
+        public string Guid { get;  set; }
     }
 }

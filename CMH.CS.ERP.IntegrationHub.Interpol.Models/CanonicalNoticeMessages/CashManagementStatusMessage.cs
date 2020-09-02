@@ -1,6 +1,10 @@
-﻿namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
+﻿using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
+using Newtonsoft.Json;
+using System.Xml.Serialization;
+
+namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
 {
-    public class CashManagementStatusMessage
+    public class CashManagementStatusMessage : IGuidProvider
     {
         public string Status { get; set; }
 
@@ -13,5 +17,9 @@
         public string BusinessUnit { get; set; }
 
         public NoticeRejectionDetail[] ListRejectionsDetail { get; set; }
+
+        [JsonIgnore]
+        [XmlIgnore]
+        public string Guid => SourceGuid;
     }
 }
