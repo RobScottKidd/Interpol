@@ -264,7 +264,18 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     }
                     else
                     {
-                        var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnit.BUName.CleanBUName());
+                        IBusinessUnit businessUnitRouting;
+
+                        if (item is IAlternateRoutingBU altBu)
+                        {
+                            businessUnitRouting = altBu.AlternateBU;
+                        }
+                        else
+                        {
+                            businessUnitRouting = businessUnit;
+                        }
+
+                        var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnitRouting.BUName.CleanBUName());
                         if (applicableKey != null)
                         {
                             messageCount += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
