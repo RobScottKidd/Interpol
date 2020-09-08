@@ -89,7 +89,16 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         {
             if (usableRoutingKey != null)
             {
-                _logger.LogInformation($"Sending message to RabbitMQ with key {usableRoutingKey.RoutingKey} ");
+                string itemGuid = "{ITEM TYPE DOES NOT IMPLEMENT IGuidProvider}";
+                if (item is IGuidProvider)
+                {
+                    itemGuid = (item as IGuidProvider).Guid;
+
+                    if (string.IsNullOrEmpty(itemGuid))
+                    {
+                        itemGuid = "{ITEM HAD NO GUID}";
+                    }
+                }
 
                 for (int retryCount = 0; retryCount <= _config.PublishRetryCount; retryCount++)
                 {
@@ -139,6 +148,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         //TODO: Remove once Notice Messages are approved
                         //string output = JsonConvert.SerializeObject(eventMessage);
                         //System.IO.File.WriteAllText(@$"C:\TextFiles\{itemType.QueueNameFromDataTypeName()}{Guid.NewGuid()}.txt", output);
+
+                        _logger.LogInformation($"Sending message to RabbitMQ for item {itemGuid} with key {usableRoutingKey.RoutingKey}");
 
                         // todo [SnyderM 9/27/19]: how do we want to handle retries for publish?
                         if (!_connector.PublishEventMessage(eventMessage))
@@ -253,7 +264,18 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     }
                     else
                     {
-                        var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnit.BUName.CleanBUName());
+                        IBusinessUnit businessUnitRouting;
+
+                        if (item is IAlternateRoutingBU altBu)
+                        {
+                            businessUnitRouting = altBu.AlternateBU;
+                        }
+                        else
+                        {
+                            businessUnitRouting = businessUnit;
+                        }
+
+                        var applicableKey = nonExcludedKeys.FirstOrDefault(_key => _key.BusinessUnit.BUName.CleanBUName() == businessUnitRouting.BUName.CleanBUName());
                         if (applicableKey != null)
                         {
                             messageCount += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);

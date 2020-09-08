@@ -12,5 +12,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         public CashManagementStatusMessage[] Messages { get; set; }
 
         public string Version => "V1.0";
+
+        public string Guid { get; set; }
     }
 }
