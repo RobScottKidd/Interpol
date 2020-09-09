@@ -252,6 +252,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                         eventVersion = versionableModel.Version;
                     }
+
                     else
                     {
                         eventVersion = "V1.0";
@@ -262,6 +263,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         messageCount += SendMessagesToAllBUs(item, nonExcludedKeys, messageType, itemType.Name, eventVersion);
                     }
+
                     else
                     {
                         IBusinessUnit businessUnitRouting;
@@ -280,6 +282,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         {
                             messageCount += SendMessage(item, applicableKey, messageType, itemType.Name, eventVersion);
                         }
+
                         else
                         {
                             _logger.LogInformation($"Not sending { item.DataTypeName() } item as its routing key { routingKeys.First().RoutingKey } is filtered out. BU Name { businessUnit.BUName.CleanBUName() }");
