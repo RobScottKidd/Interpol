@@ -14,14 +14,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private readonly IAggregateMessageProcessor _aggregateMessageProcessor;
         private readonly IMessageProcessor _messageProcessor;
 
-        public OracleBackflowCashManagementStatusPostProcessor(ILogger<OracleBackflowPostProcessor<OracleBackflowCashManagementStatusPostProcessor>> logger,
-            IAggregateMessageProcessor aggregateMessageProcessor, IMessageProcessor messageProcessor)
+        public OracleBackflowCashManagementStatusPostProcessor(
+            ILogger<OracleBackflowCashManagementStatusPostProcessor> logger,
+            IAggregateMessageProcessor aggregateMessageProcessor,
+            IMessageProcessor messageProcessor)
         {
             _logger = logger;
             _messageProcessor = messageProcessor;
             _aggregateMessageProcessor = aggregateMessageProcessor;
         }
 
+        /// <inheritdoc/>
         public int Process(IProcessingResultSet<CashManagementStatusMessage> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             var proccessedResults = processingResults.ProcessedItems.Select((pi) => pi.ProcessedItem).OrderBy((p) => p.SourceGuid).OrderBy((s) => s.BusinessUnit).ToList();

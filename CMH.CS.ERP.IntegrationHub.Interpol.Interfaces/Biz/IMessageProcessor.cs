@@ -1,6 +1,7 @@
 ﻿using CMH.Common.Events.Models;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using System;
+using System.Collections.Generic;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
 {
@@ -23,14 +24,14 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
         /// </summary>
         /// <param name="item">The object that will be the payload</param>
         /// <param name="usuableRoutingKey">The routing key to include</param>
-        int SendMessage(object item, IEMBRoutingKeyInfo usuableRoutingKey, EventClass eventClass, string itemType, string eventVersion);
+        int SendMessage<T>(IRoutableItem<T> item, IEMBRoutingKeyInfo usuableRoutingKey, EventClass eventClass, string eventVersion);
 
         /// <summary>
         /// Method that loops through all the keys to send messages
         /// </summary>
         /// <param name="item">The object that will be the payload</param>
         /// <param name="routingkeys">The routing key to include</param>
-        int SendMessagesToAllBUs(object item, IEMBRoutingKeyInfo[] routingkeys, EventClass eventClass, string itemType, string eventVersion);
+        int SendMessagesToAllBUs<T>(IRoutableItem<T> item, IEMBRoutingKeyInfo[] routingkeys, EventClass eventClass, string eventVersion);
 
         /// <summary>
         /// Processes message sending based on canonical models
@@ -39,6 +40,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
         /// <param name="businessUnit">BU the processor is for</param>
         /// <param name="runStartTime">Start time of current running thread</param>
         /// <param name="processId">Lock ID for current running thread</param>
-        int Process(object[] items, IBusinessUnit businessUnit, DateTime runStartTime, Guid processId);
+        int Process<T>(List<IRoutableItem<T>> items, IBusinessUnit businessUnit, DateTime runStartTime, Guid processId);
     }
 }

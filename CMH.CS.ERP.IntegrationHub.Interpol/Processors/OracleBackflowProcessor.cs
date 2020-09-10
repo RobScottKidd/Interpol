@@ -7,39 +7,39 @@ using System.Text.RegularExpressions;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
-    public abstract class OracleBackflowProcessor<T> : IOracleBackflowProcessor<T>
+    public class OracleBackflowProcessor<T> : IOracleBackflowProcessor<T>
     {
-        protected readonly ILogger _logger;
-        protected string ROOT_ELEMENT;
+        private readonly ILogger _logger;
+        private readonly string ROOT_ELEMENT;
 
         private const string BUSINESSUNIT_TAG_BU = "businessunit";
         private const string SUBLEDGER_TAG = "subledger";
         private const string PROCUREMENT_TAG = "procurementbu";
 
         /// <summary>
-        /// Base constructor
+        /// Constructor that stores references to the provided logger and root XML element to look for during parsing
         /// </summary>
-        /// <param name="logger"></param>
-        public OracleBackflowProcessor(ILogger<OracleBackflowProcessor<T>> logger)
+        /// <param name="logger">The class logger</param>
+        /// <param name="rootElement">The root XML element to start parsing</param>
+        public OracleBackflowProcessor(ILogger<OracleBackflowProcessor<T>> logger, string rootElement)
         {
+            if (string.IsNullOrWhiteSpace(rootElement)) throw new ArgumentNullException(nameof(rootElement), $"No root element specified for xml parsing of {typeof(T).Name}");
+
             _logger = logger;
+            ROOT_ELEMENT = rootElement;
         }
 
         /// <summary>
         /// Processes the xml string to canonical format
         /// </summary>
         /// <param name="xmlString">xml string for collection of canonical models</param>
+        /// <param name="businessUnit"></param>
         /// <returns></returns>
         public virtual IProcessingResultSet<T> ProcessItems(string xmlString, string businessUnit)
         {
             if (string.IsNullOrWhiteSpace(xmlString))
             {
                 throw new ArgumentException("XML string must not be empty");
-            }
-
-            if (string.IsNullOrWhiteSpace(ROOT_ELEMENT))
-            {
-                throw new InvalidOperationException($"No root element specified for xml parsing of {typeof(T).Name}");
             }
 
             //TODO: The following code skips every other element in the array if there is no white space between them.

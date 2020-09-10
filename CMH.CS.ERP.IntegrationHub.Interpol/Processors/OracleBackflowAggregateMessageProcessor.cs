@@ -7,6 +7,7 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 using System.Threading;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
@@ -14,7 +15,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     public class OracleBackflowAggregateMessageProcessor : IAggregateMessageProcessor
     {
         private readonly IMessageBusConnector _connector;
-        private readonly ILogger<IAggregateMessageProcessor> _logger;
+        private readonly ILogger<OracleBackflowAggregateMessageProcessor> _logger;
         private readonly IBUDataTypeLockRepository _buDataTypeLockRepo;
         private readonly IInterpolConfiguration _config;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -26,7 +27,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         public OracleBackflowAggregateMessageProcessor(
             IMessageBusConnector connector,
             IInterpolConfiguration config,
-            ILogger<IAggregateMessageProcessor> logger,
+            ILogger<OracleBackflowAggregateMessageProcessor> logger,
             IDateTimeProvider dateTimeProvider,
             IIDProvider idProvider,
             IBUDataTypeLockRepository buDataTypeLockRepo
@@ -39,40 +40,38 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _buDataTypeLockRepo = buDataTypeLockRepo;
         }
 
+        /// <inheritdoc/>
         public int Process<T>(IAggregateMessage<T>[] items, IBusinessUnit businessUnit, string dataType, DateTime lockReleaseTime, Guid processId)
         {
             // look at next release time minus 1 min for overlap; smaller chance of being picked up by another process
             nextReleaseTime = lockReleaseTime.AddMinutes(LOCKTIME_OVERLAP);
             int messageCount = 0;
 
-            if (items != null)
+            items?.ToList()?.ForEach(item =>
             {
-                foreach (var item in items)
+                string reworkedBU = null;
+                string routingKey = null;
+
+                if (item.BusinessUnit.Contains(' '))
                 {
-                    string reworkedBU = null;
-                    string routingKey = null;
-
-                    if (item.BusinessUnit.Contains(' '))
-                    {
-                        int index = item.BusinessUnit.IndexOf(' ');
-                        reworkedBU = item.BusinessUnit.Substring(0, index);
-                        routingKey = $"{reworkedBU.ToLower()}.erp.{dataType}";
-                    }
-                    else
-                    {
-                        routingKey = $"{item.BusinessUnit.ToLower()}.erp.{dataType}";
-                    }
-                    messageCount++;
-
-                    if (routingKey == $"hbf.erp.{dataType}" || routingKey == $"supply.erp.{dataType}")
-                    {
-                        routingKey = $"hbg.erp.{dataType}";
-                    }
-
-                    SendMessage(item, routingKey, EventClass.Notice, typeof(T).Name);
-                    CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);
+                    int index = item.BusinessUnit.IndexOf(' ');
+                    reworkedBU = item.BusinessUnit.Substring(0, index);
+                    routingKey = $"{reworkedBU.ToLower()}.erp.{dataType}";
                 }
-            }
+                else
+                {
+                    routingKey = $"{item.BusinessUnit.ToLower()}.erp.{dataType}";
+                }
+                messageCount++;
+
+                if (routingKey == $"hbf.erp.{dataType}" || routingKey == $"supply.erp.{dataType}")
+                {
+                    routingKey = $"hbg.erp.{dataType}";
+                }
+
+                SendMessage(item, routingKey, EventClass.Notice);
+                CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);
+            });
 
             return messageCount;
         }
@@ -108,7 +107,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             }
         }
 
-        public void ValidateMessage(IEventMessage<object> eventMessage)
+        private void ValidateMessage(IEventMessage<object> eventMessage)
         {
             if (string.IsNullOrEmpty(eventMessage.EventSubType))
             {
@@ -118,15 +117,16 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         }
 
         /// <summary>
-        /// Sends a single
+        /// Sends a single aggregate message on the EMB
         /// </summary>
         /// <param name="item"></param>
         /// <param name="usableRoutingKey"></param>
-        public void SendMessage<T>(IAggregateMessage<T> item, string usableRoutingKey, EventClass messageType, string itemType)
+        /// <param name="messageType"></param>
+        private void SendMessage<T>(IAggregateMessage<T> item, string usableRoutingKey, EventClass messageType)
         {
             if (usableRoutingKey != null)
             {
-                _logger.LogInformation($"Sending message to RabbitMQ with key {usableRoutingKey} ");
+                _logger.LogInformation($"Sending message to RabbitMQ with key {usableRoutingKey}");
 
                 var keySplit = usableRoutingKey.Split('.');
                 for (int retryCount = 0; retryCount <= _config.PublishRetryCount; retryCount++)
@@ -134,21 +134,20 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     try
                     {
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
-                                eventClass: messageType,
-                                item: item.Messages as object,
-                                source: keySplit[0],
-                                eventType: typeof(T).Name.QueueNameFromDataTypeName(),
-                                eventSubType: item.Status,
-                                processId: "",
-                                idProvider: _idProvider,
-                                dateTimeProvider: _dateTimeProvider,
-                                version: item.Version
-                            );
+                            eventClass: messageType,
+                            item: item.Messages as object,
+                            source: keySplit[0],
+                            eventType: item.EventType,
+                            eventSubType: item.Status,
+                            processId: string.Empty,
+                            idProvider: _idProvider,
+                            dateTimeProvider: _dateTimeProvider,
+                            version: item.Version
+                        );
 
-                        // adding new logic here to validate some basic required fields in the message
                         ValidateMessage(eventMessage);
 
-                        // todo: We probably want to move the exhange format our into configuration at some point
+                        // todo: We probably want to move the exhange format into configuration at some point
                         eventMessage.Exchange = $"corporate.erp.{keySplit[2]}";
                         eventMessage.RoutingKey = usableRoutingKey;
 

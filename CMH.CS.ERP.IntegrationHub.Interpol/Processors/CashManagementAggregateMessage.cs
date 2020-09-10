@@ -5,6 +5,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
     public class CashManagementAggregateMessage : IAggregateMessage<CashManagementStatusMessage>
     {
+        public string EventType => "cashmanagement";
+
         public string Status { get; set; }
 
         public string BusinessUnit => Messages[0]?.BusinessUnit;

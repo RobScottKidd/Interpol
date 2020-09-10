@@ -1,27 +1,40 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
-using Microsoft.Extensions.Logging;
 using System;
+using System.Linq;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
     /// <summary>
     /// Supplier specific implementation of backflow post processor
     /// </summary>
-    public class OracleBackflowAPPaymentPostProcessor : OracleBackflowPostProcessor<APPayment>
+    public class OracleBackflowAPPaymentPostProcessor : IOracleBackflowPostProcessor<APPayment>
     {
+        private readonly IMessageProcessor _messageProcessor;
         /// <summary>
         /// Base constructor
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="messageProcessor"></param>
-        public OracleBackflowAPPaymentPostProcessor(ILogger<OracleBackflowAPPaymentPostProcessor> logger, IMessageProcessor messageProcessor) : base(logger, messageProcessor)
+        public OracleBackflowAPPaymentPostProcessor(IMessageProcessor messageProcessor)
         {
+            _messageProcessor = messageProcessor;
         }
-        public override int Process(IProcessingResultSet<APPayment> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
+
+        /// <inheritdoc/>
+        public int Process(IProcessingResultSet<APPayment> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
-            return base.Process(processingResults, businessUnit, lockReleaseTime, processId);
+            var proccessedResults = processingResults.ProcessedItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+            var unParsableResults = processingResults.UnparsableItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+
+            var messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
+            _messageProcessor.Process(unParsableResults, businessUnit, lockReleaseTime, processId);
+
+            return messageCount;
         }
     }
 }

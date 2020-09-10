@@ -1,7 +1,6 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,26 +11,24 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// GL Journal specific implementation of backflow post processor
     /// </summary>
     public class OracleBackflowGLJournalStatusMessagePostProcessor : IOracleBackflowPostProcessor<GLJournalStatusMessage>
-    {        
-        private readonly ILogger _logger;
+    {
         private readonly IMessageProcessor _messageProcessor;
         private readonly IAggregateMessageProcessor _aggregateMessageProcessor;
 
         /// <summary>
         /// Base constructor
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="messageProcessor"></param>
+        /// <param name="aggregateMessageProcessor"></param>
         public OracleBackflowGLJournalStatusMessagePostProcessor(
-            ILogger<OracleBackflowGLJournalStatusMessagePostProcessor> logger, 
             IMessageProcessor messageProcessor,
             IAggregateMessageProcessor aggregateMessageProcessor)
         {
-            _logger = logger;
             _messageProcessor = messageProcessor;
             _aggregateMessageProcessor = aggregateMessageProcessor;
         }
 
+        /// <inheritdoc/>
         public int Process(IProcessingResultSet<GLJournalStatusMessage> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             var proccessedResults = processingResults.ProcessedItems.Select((pi) => pi.ProcessedItem).OrderBy((p) => p.JournalGuid).OrderBy((s) => s.BusinessUnit).ToList();

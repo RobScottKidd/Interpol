@@ -2,7 +2,6 @@
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Linq;
 
@@ -11,21 +10,24 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// <summary>
     /// AP Payment Request specific implementation of backflow post processor
     /// </summary>
-    public class OracleBackflowAPPaymentRequestPostProcessor : OracleBackflowPostProcessor<APPaymentRequest>
+    public class OracleBackflowAPPaymentRequestPostProcessor : IOracleBackflowPostProcessor<APPaymentRequest>
     {
+        private readonly IMessageProcessor _messageProcessor;
         private readonly IBUTrackerRepository _bUTrackerRepo;
 
         /// <summary>
         /// Base constructor
         /// </summary>
-        /// <param name="logger"></param>
         /// <param name="messageProcessor"></param>
-        public OracleBackflowAPPaymentRequestPostProcessor(ILogger<OracleBackflowAPPaymentRequestPostProcessor> logger, IMessageProcessor messageProcessor, IBUTrackerRepository bUTrackerRepo) : base(logger, messageProcessor)
+        /// <param name="bUTrackerRepo"></param>
+        public OracleBackflowAPPaymentRequestPostProcessor(IMessageProcessor messageProcessor, IBUTrackerRepository bUTrackerRepo)
         {
+            _messageProcessor = messageProcessor;
             _bUTrackerRepo = bUTrackerRepo;
         }
 
-        public override int Process(IProcessingResultSet<APPaymentRequest> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
+        /// <inheritdoc/>
+        public int Process(IProcessingResultSet<APPaymentRequest> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             var allGuids = processingResults?.ProcessedItems
                             ?.Where(x => Guid.TryParse(x?.ProcessedItem?.Guid, out Guid g))
@@ -51,7 +53,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 }
             });
 
-            return base.Process(processingResults, businessUnit, lockReleaseTime, processId);
+            var proccessedResults = processingResults.ProcessedItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+            var unParsableResults = processingResults.UnparsableItems
+                                    .Select(pi => pi.ProcessedItem as object)
+                                    .ToArray();
+
+            var messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
+            _messageProcessor.Process(unParsableResults, businessUnit, lockReleaseTime, processId);
+
+            return messageCount;
         }
     }
 }

@@ -13,34 +13,35 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// </summary>
     public class OracleBackflowAPPaymentRequestProcessor : OracleBackflowProcessor<APPaymentRequest>
     {
-        private IServiceProvider _serviceProvider;
+        private readonly IOracleBackflowProcessor<APInvoice> _apInvoiceProcessor;
 
         /// <summary>
         /// Base constructor
         /// </summary>
+        /// <param name="apInvoiceProcessor"></param>
         /// <param name="logger"></param>
-        public OracleBackflowAPPaymentRequestProcessor(IServiceProvider serviceProvider, ILogger<OracleBackflowAPPaymentRequestProcessor> logger) : base(logger)
+        /// <param name="rootElement"></param>
+        public OracleBackflowAPPaymentRequestProcessor(IOracleBackflowProcessor<APInvoice> apInvoiceProcessor, ILogger<OracleBackflowAPPaymentRequestProcessor> logger, string rootElement) : base(logger, rootElement)
         {
-            _serviceProvider = serviceProvider;
-            ROOT_ELEMENT = "InvoiceHeaders";
+            _apInvoiceProcessor = apInvoiceProcessor;
         }
 
         /// <summary>
         /// Processes all AP Payment Request items from the xml string
         /// </summary>
         /// <param name="xmlString">XML string from Oracle</param>
+        /// <param name="businessUnit"></param>
         /// <returns></returns>
         public override IProcessingResultSet<APPaymentRequest> ProcessItems(string xmlString, string businessUnit)
         {
-            var registeredAPInvoiceProcessor = _serviceProvider.GetService<IOracleBackflowProcessor<APInvoice>>();
-            var parsedItems = registeredAPInvoiceProcessor.ProcessItems(xmlString, businessUnit);
+            var parsedItems = _apInvoiceProcessor.ProcessItems(xmlString, businessUnit);
            
             // TODO: PAYEEs are not presently returned from Oracle. When they are added, code will need to be added here to handle them as well.
             List<IProcessingResult<APPaymentRequest>> processingResults = new List<IProcessingResult<APPaymentRequest>>();
  
             return new ProcessingResultSet<APPaymentRequest>()
             {
-                ProcessedItems = parsedItems.ProcessedItems.Select((a) => 
+                ProcessedItems = parsedItems.ProcessedItems.Select((a) =>
                     new ProcessingResult<APPaymentRequest>() 
                     {
                         ProcessedItem = new APPaymentRequest() 
