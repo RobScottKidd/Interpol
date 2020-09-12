@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
 {
@@ -11,6 +12,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz
         /// <param name="businessUnit">BU the processor is for</param>
         /// <param name="runStartTime">Start time of current running thread</param>
         /// <param name="processId">Lock ID for current running thread</param>
-        int Process<T>(IAggregateMessage<T>[] items, IBusinessUnit businessUnit, string dataType, DateTime runStartTime, Guid processId);
+        int Process<T>(List<IAggregateMessage<T>> items, IBusinessUnit businessUnit, string dataType, DateTime runStartTime, Guid processId);
     }
 }

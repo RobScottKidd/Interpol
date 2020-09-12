@@ -13,7 +13,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private string _businessUnit;
         public string BusinessUnit
         {
-            get => _businessUnit ?? Messages.FirstOrDefault()?.Subledger;
+            get => _businessUnit ?? Messages?.FirstOrDefault()?.Subledger;
             set => _businessUnit = value;
         }
 
