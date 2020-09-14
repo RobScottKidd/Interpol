@@ -1,4 +1,5 @@
-﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
+﻿using CMH.CS.ERP.IntegrationHub.Interpol.Biz.ScheduleService;
+using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models.Mappers;
 using Microsoft.Extensions.Logging;
 using System;
@@ -15,6 +16,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const string BUSINESSUNIT_TAG_BU = "businessunit";
         private const string SUBLEDGER_TAG = "subledger";
         private const string PROCUREMENT_TAG = "procurementbu";
+        private const string GUID_TAG_SOURCE_GUID = "sourceguid";
+        private const string GUID_TAG_JOURNAL_GUID = "journalguid";
+        private const string GUID_TAG_INVOICE_GUID = "invoiceguid";
+        private const string GUID_TAG_GUID = "guid";
 
         /// <summary>
         /// Constructor that stores references to the provided logger and root XML element to look for during parsing
@@ -67,6 +72,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             {
                 try
                 {
+                    var itemResult = ExtractGUIDFromString(match.Value);
+                    _logger.LogInformation($"Attempt to extract item with {itemResult.Item1}: {itemResult.Item2}");
+
                     T processedItem = default;
 
                     var validXml = $"<?xml version=\"1.0\" encoding=\"UTF8\"?>";
@@ -128,6 +136,55 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             }
 
             return bu;
+        }
+
+        private Tuple<string, string> ExtractGUIDFromString(string item)
+        {
+            item = item.ToLower();
+            string found;
+            string founda;
+            string foundb;
+            string foundc;
+
+            Regex rgx = new Regex($"<{GUID_TAG_GUID}>.*?</{GUID_TAG_GUID}>");
+            var itemElement = rgx.Match(item);
+
+            found = itemElement.Value.Replace($"<{GUID_TAG_GUID}>", "")
+                                  .Replace($"</{GUID_TAG_GUID}>", "");
+
+            if (!string.IsNullOrEmpty(found)) return new Tuple<string, string>("GUID", found);
+
+            Regex rgxa = new Regex($"<{GUID_TAG_INVOICE_GUID}>.*?</{GUID_TAG_INVOICE_GUID}>");
+            var itemElementa = rgxa.Match(item);
+
+            founda = itemElementa.Value.Replace($"<{GUID_TAG_INVOICE_GUID}>", "")
+                                    .Replace($"</{GUID_TAG_INVOICE_GUID}>", "");
+
+            if (!string.IsNullOrEmpty(founda)) return new Tuple<string, string>("INVOICE GUID", founda);
+
+            Regex rgxb = new Regex($"<{GUID_TAG_JOURNAL_GUID}>.*?</{GUID_TAG_JOURNAL_GUID}>");
+            var itemElementb = rgxb.Match(item);
+
+            foundb = itemElementb.Value.Replace($"<{GUID_TAG_JOURNAL_GUID}>", "")
+                                    .Replace($"</{GUID_TAG_JOURNAL_GUID}>", "");
+
+            if (!string.IsNullOrEmpty(foundb)) return new Tuple<string, string>("JOURNAL GUID", foundb);
+
+            Regex rgxc = new Regex($"<{GUID_TAG_SOURCE_GUID}>.*?</{GUID_TAG_SOURCE_GUID}>");
+            var itemElementc = rgxc.Match(item);
+
+            foundc = itemElementc.Value.Replace($"<{GUID_TAG_SOURCE_GUID}>", "")
+                                    .Replace($"</{GUID_TAG_SOURCE_GUID}>", "");
+
+            if (!string.IsNullOrEmpty(foundc)) 
+            {
+                return new Tuple<string, string>("SOURCE GUID", foundc);
+            }
+
+            else
+            {
+                return new Tuple<string, string>("GUID", "no guid could be extracted");
+            }
         }
 
         private string ExtractString(string tagName, string item)

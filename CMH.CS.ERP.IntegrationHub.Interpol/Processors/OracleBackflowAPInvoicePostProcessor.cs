@@ -56,6 +56,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                                 ?.Where(x => Guid.TryParse(x?.ProcessedItem?.Guid, out Guid itemGuid))
                                 ?.Select(x => new Guid(x.ProcessedItem.Guid))
                                 .ToList();
+                _logger.LogInformation($"Looking up Business Units to send messages to for these guids: { string.Join(", ", allGuids) }");
 
                 actionStopwatch.Start();
                 var buLookup = _bUTrackerRepo.GetBusinessUnits(allGuids);

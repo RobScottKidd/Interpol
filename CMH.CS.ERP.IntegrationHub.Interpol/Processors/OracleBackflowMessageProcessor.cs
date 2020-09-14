@@ -6,6 +6,7 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
+using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -90,7 +91,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         {
             if (usableRoutingKey != null)
             {
-                _logger.LogInformation($"Sending message to EMB with key {usableRoutingKey.RoutingKey}");
+                string itemGuid = "{ITEM TYPE DOES NOT IMPLEMENT IGuidProvider}";
+                if (item.Model is IGuidProvider guidProvider)
+                {
+                    itemGuid = guidProvider.Guid;
+
+                    if (string.IsNullOrEmpty(itemGuid))
+                    {
+                        itemGuid = "{ITEM HAD NO GUID}";
+                    }
+                }
+                _logger.LogInformation($"Sending message to EMB for item {itemGuid} with key {usableRoutingKey.RoutingKey}");
 
                 for (int retryCount = 0; retryCount <= _config.PublishRetryCount; retryCount++)
                 {
