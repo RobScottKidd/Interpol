@@ -8,7 +8,6 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
-using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.RichExamples;
 using FakeItEasy;
 using Microsoft.Extensions.Logging;
@@ -24,9 +23,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
     [TestFixture]
     public class MessageProcessorTests
     {
-        IMessageProcessor _processor;
         IMessageBusConnector _connector;
-        IEMBRoutingKeyGenerator _rkGenerator;
         IDataCache _cache;
         IInterpolConfiguration _config;
         ILogger<IMessageProcessor> _logger;
@@ -36,13 +33,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         IBUDataTypeLockRepository _buDataTypeLockRepo;
 
         Supplier[] suppliers;
+        List<IRoutableItem<Supplier>> routableItems;
         IEMBRoutingKeyInfo[] routingKeys;
 
         [SetUp]
         public void SetUp()
         {
             _connector = A.Fake<IMessageBusConnector>();
-            _rkGenerator = A.Fake<IEMBRoutingKeyGenerator>();
             _extractor = A.Fake<IReportXmlExtractor>();
             _cache = A.Fake<IDataCache>();
 
@@ -88,39 +85,45 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 new EMBRoutingKeyInfo("21stmortgage", "21stmortgage.erp.supplier"),
                 new EMBRoutingKeyInfo("fredsbu", "fredsbu.erp.supplier")
             };
+
+            routableItems = suppliers.Select(supplier => new RoutableItem<Supplier>()
+            {
+                DataType = DataTypes.supplier,
+                MessageType = Common.Events.Models.EventClass.Detail,
+                Model = supplier,
+                Status = supplier.Status,
+                RoutingKeys = routingKeys
+            }).ToList<IRoutableItem<Supplier>>();
         }
 
         [Test]
         public void ProcessHandlesNoData()
         {
-            var cntr = A.Fake<IMessageBusConnector>();
-            _processor = new OracleBackflowMessageProcessor(cntr, _rkGenerator, _config, _logger, _timeProvider, null, _buDataTypeLockRepo);
+            List<IRoutableItem<APInvoice>> items = null;
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
 
             A.CallTo(() => _cache.BusinessUnits())
                 .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF", BusinessUnitID = new Guid() } });
-             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
-              .Returns(null);
+            A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
+                .Returns(null);
 
-            _processor.Process(null, _cache.BusinessUnits().First(), DateTime.UtcNow, Guid.NewGuid());
+            processor.Process(items, _cache.BusinessUnits().First(), DateTime.UtcNow, Guid.NewGuid());
 
-            A.CallTo(() => cntr.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustNotHaveHappened();
+            A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustNotHaveHappened();
         }
 
         [Test]
         public void ProcessCompletes()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored ))
-                .Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
                 .Returns(suppliers);
             A.CallTo(() => _cache.BusinessUnits())
-                 .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" }  });
-             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).Returns(true);
+                .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" }  });
+            A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).Returns(true);
             
-
-           _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, A.Fake<IDateTimeProvider>(), _idProvider, _buDataTypeLockRepo);
-           _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.UtcNow, Guid.NewGuid());
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.UtcNow, Guid.NewGuid());
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustHaveHappened();
 
             // todo: this needs to be fixed
@@ -130,8 +133,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void ProcessCompletes_UpdatesLockTimeout()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored))
-                .Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
                 .Returns(suppliers);
             A.CallTo(() => _cache.BusinessUnits())
@@ -140,8 +141,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _timeProvider.CurrentTime).Returns(DateTime.Now);
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(1);
 
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
-            _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-10), Guid.NewGuid());
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-10), Guid.NewGuid());
+            
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustHaveHappened();
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
         }
@@ -149,8 +151,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void ProcessCompletes_DoesNotUpdateLockTimeout()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored))
-                .Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
                 .Returns(suppliers);
             A.CallTo(() => _cache.BusinessUnits())
@@ -159,8 +159,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _timeProvider.CurrentTime).Returns(DateTime.Now);
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(1);
 
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
-            _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(10), Guid.NewGuid());
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(10), Guid.NewGuid());
+            
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustHaveHappened();
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustNotHaveHappened();
         }
@@ -168,8 +169,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void ProcessFails_CannotUpdateLockTimeout()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored))
-                .Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored))
                 .Returns(suppliers);
             A.CallTo(() => _cache.BusinessUnits())
@@ -178,8 +177,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _timeProvider.CurrentTime).Returns(DateTime.Now);
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Returns(0);
 
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
-            Assert.Throws<DbRowLockException>(() => _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            Assert.Throws<DbRowLockException>(() => processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
 
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustNotHaveHappened();
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
@@ -188,7 +187,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void ProcessFails_ExceptionInLockTimeoutCheck()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored)).Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored)).Returns(suppliers);
             A.CallTo(() => _cache.BusinessUnits())
                 .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
@@ -196,8 +194,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _timeProvider.CurrentTime).Returns(DateTime.Now);
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Throws(new Exception("Expected exception"));
 
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
-            Assert.Throws<Exception>(() => _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            Assert.Throws<Exception>(() => processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
 
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustNotHaveHappened();
@@ -206,7 +204,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void ProcessFails_EmptySupplierStatus()
         {
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored)).Returns(routingKeys);
             A.CallTo(() => _extractor.GetItems(A<DataTypes>.Ignored, A<string>.Ignored)).Returns(new Supplier[] { new SupplierExample().Example as Supplier });
             A.CallTo(() => _cache.BusinessUnits())
                 .Returns(new List<IBusinessUnit>() { new BusinessUnit() { BUAbbreviation = "hbf", BUName = "HBF" } });
@@ -214,8 +211,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _timeProvider.CurrentTime).Returns(DateTime.Now);
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).Throws(new Exception("Expected exception"));
 
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
-            Assert.Throws<Exception>(() => _processor.Process(suppliers, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
+            Assert.Throws<Exception>(() => processor.Process(routableItems, _cache.BusinessUnits().First(), DateTime.Now.AddMinutes(-30), Guid.NewGuid()));
 
             A.CallTo(() => _buDataTypeLockRepo.UpdateLockForPolling(A<string>.Ignored, A<string>.Ignored, A<Guid>.Ignored, A<int>.Ignored)).MustHaveHappened();
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).MustNotHaveHappened();
@@ -224,17 +221,13 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void RemoveExclusionsWorks()
         {
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, A.Fake<IDateTimeProvider>(), _idProvider, _buDataTypeLockRepo);
-
-            A.CallTo(() => _rkGenerator.GenerateRoutingKeys(A<IEMBRoutingKeyProvider>.Ignored ))
-               .Returns(routingKeys);
-
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
             var excls = _config.Exclusions.ToList();
             var bus = excls.FirstOrDefault()?.ExcludedBUs?.ToList();
             bus.Add("21stmortgage");
             excls[0].ExcludedBUs = bus.ToArray();
 
-            var revised = _processor.RemoveExclusions(excls.ToArray(), "supplier", routingKeys);
+            var revised = processor.RemoveExclusions(excls.ToArray(), "supplier", routingKeys);
 
             Assert.AreNotSame(routingKeys, revised);
             Assert.AreEqual(routingKeys.Count() - 2, revised.Count());
@@ -243,25 +236,22 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         [Test]
         public void SendMessagesWorks()
         {
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, A.Fake<IDateTimeProvider>(), _idProvider, _buDataTypeLockRepo);
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored)).Returns(true);
-            _processor.SendMessage(suppliers[0], routingKeys[0], CMH.Common.Events.Models.EventClass.Detail, "EntryDomo", "V1.0");
-
-            Assert.IsTrue(true);
+            processor.SendMessage(routableItems.FirstOrDefault(), routingKeys.FirstOrDefault(), CMH.Common.Events.Models.EventClass.Detail, "V1.0");
         }
 
         [Test]
         public void SendMessageRetryLogicSuccess()
         {
-            _processor = new OracleBackflowMessageProcessor(_connector, _rkGenerator, _config, _logger, A.Fake<IDateTimeProvider>(), _idProvider, _buDataTypeLockRepo);
+            var processor = new OracleBackflowMessageProcessor(_connector, _config, _logger, _timeProvider, _idProvider, _buDataTypeLockRepo);
             A.CallTo(() => _connector.PublishEventMessage(A<IEMBEvent<object>>.Ignored))
                 .Throws<Exception>()
                 .Twice()
                 .Then
                 .Returns(true);
             var start = DateTime.Now;
-            _processor.SendMessage(suppliers[0], routingKeys[0], CMH.Common.Events.Models.EventClass.Detail, "EntryDomo", "V1.0");
-            Assert.True(true);
+            processor.SendMessage(routableItems.FirstOrDefault(), routingKeys.FirstOrDefault(), CMH.Common.Events.Models.EventClass.Detail, "V1.0");
         }
 
         private class EMBRoutingKeyInfo : IEMBRoutingKeyInfo
