@@ -1,5 +1,7 @@
 ﻿using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 
+using EventClass = CMH.Common.Events.Models.EventClass;
+
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
 {
     /// <summary>
@@ -21,7 +23,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
         /// <summary>
         /// The message type (usually Detail or Notice)
         /// </summary>
-        public Common.Events.Models.EventClass MessageType { get; set; }
+        public EventClass MessageType { get; set; }
 
         /// <summary>
         /// The canonical model
@@ -39,8 +41,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
         public string Status { get; set; }
 
         /// <summary>
-        /// The version of the model
+        /// The version of the model (this can be an optional field for certain datatypes)
         /// </summary>
-        public string Version { get; }
+        public string Version { get; set; }
     }
 }

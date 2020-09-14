@@ -27,12 +27,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const string HIGHEST_STATUS = "AHC";
 
         /// <summary>
-        /// 
+        /// DI constructor
         /// </summary>
         /// <param name="logger">The class logger</param>
         /// <param name="aggregateMessageProcessor">The aggregate message processor</param>
         /// <param name="messageProcessor">The regular message processor</param>
-        /// <param name="bUTrackerRepo"></param>
+        /// <param name="bUTrackerRepo">The GUID-to-BU translation repository</param>
         public OracleBackflowAccountingHubPostProcessor(
             ILogger<OracleBackflowAccountingHubPostProcessor> logger, 
             IAggregateMessageProcessor aggregateMessageProcessor,
@@ -96,6 +96,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 actionStopwatch.Restart();
                 var messageCount = _aggregateMessageProcessor.Process(aggregateMessages, businessUnit, AH_DATATYPE, lockReleaseTime, processId);
                 actionStopwatch.Stop();
+
                 _logger.LogTrace($"{ buDatatype } published { messageCount }/{ aggregateMessages.Count } aggregate messages, elapsed time: { actionStopwatch.Elapsed }");
 
                 var unParsableResults = processingResults.UnparsableItems
@@ -121,6 +122,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 actionStopwatch.Restart();
                 var unparsableCount = _messageProcessor.Process(unParsableResults, businessUnit, lockReleaseTime, processId);
                 actionStopwatch.Stop();
+
                 _logger.LogTrace($"{ buDatatype } published { unparsableCount }/{ unParsableResults.Count } unparsable messages, elapsed time: { actionStopwatch.Elapsed }");
 
                 return messageCount;

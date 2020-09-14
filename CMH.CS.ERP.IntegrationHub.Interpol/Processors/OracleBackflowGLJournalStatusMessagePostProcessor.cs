@@ -14,7 +14,7 @@ using EventClass = CMH.Common.Events.Models.EventClass;
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
     /// <summary>
-    /// GL Journal specific implementation of backflow post processor
+    /// GL Journal Status Message specific implementation of backflow post processor
     /// </summary>
     public class OracleBackflowGLJournalStatusMessagePostProcessor : IOracleBackflowPostProcessor<GLJournalStatusMessage>
     {
@@ -27,11 +27,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const string HIGHEST_STATUS = "TPF";
 
         /// <summary>
-        /// Base constructor
+        /// DI constructor
         /// </summary>
-        /// <param name="messageProcessor"></param>
-        /// <param name="aggregateMessageProcessor"></param>
-        /// <param name="bUTrackerRepo"></param>
+        /// <param name="logger">The class logger</param>
+        /// <param name="messageProcessor">The regular message processor (for unparsable items)</param>
+        /// <param name="aggregateMessageProcessor">The aggregate message processor</param>
+        /// <param name="bUTrackerRepo">The GUID-to-BU translation repository</param>
         public OracleBackflowGLJournalStatusMessagePostProcessor(
             ILogger<OracleBackflowGLJournalStatusMessagePostProcessor> logger,
             IMessageProcessor messageProcessor,
@@ -95,6 +96,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 actionStopwatch.Restart();
                 var messageCount = _aggregateMessageProcessor.Process(aggregateMessages, businessUnit, GL_DATATYPE, lockReleaseTime, processId);
                 actionStopwatch.Stop();
+
                 _logger.LogTrace($"{ buDatatype } published { messageCount }/{ aggregateMessages.Count } aggregate messages, elapsed time: { actionStopwatch.Elapsed }");
 
                 var unParsableResults = processingResults.UnparsableItems
@@ -120,6 +122,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 actionStopwatch.Restart();
                 var unparsableCount = _messageProcessor.Process(unParsableResults, businessUnit, lockReleaseTime, processId);
                 actionStopwatch.Stop();
+
                 _logger.LogTrace($"{ buDatatype } published { unparsableCount }/{ unParsableResults.Count } unparsable messages, elapsed time: { actionStopwatch.Elapsed }");
 
                 return messageCount;

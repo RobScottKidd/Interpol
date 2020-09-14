@@ -24,6 +24,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private const double LOCKTIME_OVERLAP = -1;
         private DateTime nextReleaseTime;
 
+        /// <summary>
+        /// DI constructor
+        /// </summary>
+        /// <param name="connector">The EMB connector</param>
+        /// <param name="config">The INTERPOL configuration</param>
+        /// <param name="logger">The class logger</param>
+        /// <param name="dateTimeProvider">The datetime provider</param>
+        /// <param name="idProvider">The ID provider</param>
+        /// <param name="buDataTypeLockRepo">The repository for maintaining datatype and BU locks</param>
         public OracleBackflowAggregateMessageProcessor(
             IMessageBusConnector connector,
             IInterpolConfiguration config,

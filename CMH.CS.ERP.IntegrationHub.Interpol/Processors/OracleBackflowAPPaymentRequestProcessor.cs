@@ -1,8 +1,6 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,12 +14,16 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private readonly IOracleBackflowProcessor<APInvoice> _apInvoiceProcessor;
 
         /// <summary>
-        /// Base constructor
+        /// DI constructor
         /// </summary>
-        /// <param name="apInvoiceProcessor"></param>
-        /// <param name="logger"></param>
-        /// <param name="rootElement"></param>
-        public OracleBackflowAPPaymentRequestProcessor(IOracleBackflowProcessor<APInvoice> apInvoiceProcessor, ILogger<OracleBackflowAPPaymentRequestProcessor> logger, string rootElement) : base(logger, rootElement)
+        /// <param name="apInvoiceProcessor">The APInvoice backflow processor</param>
+        /// <param name="logger">The class logger</param>
+        /// <param name="rootElement">The root element to search for when parsing backflow XML</param>
+        public OracleBackflowAPPaymentRequestProcessor(
+            IOracleBackflowProcessor<APInvoice> apInvoiceProcessor,
+            ILogger<OracleBackflowAPPaymentRequestProcessor> logger,
+            string rootElement
+        ) : base(logger, rootElement)
         {
             _apInvoiceProcessor = apInvoiceProcessor;
         }

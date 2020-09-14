@@ -29,7 +29,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private DateTime nextReleaseTime;
 
         /// <summary>
-        /// Constructor
+        /// DI constructor
         /// </summary>
         /// <param name="connector">The connector for communicating with the EMB</param>
         /// <param name="config">The configuration information for INTERPOL</param>
