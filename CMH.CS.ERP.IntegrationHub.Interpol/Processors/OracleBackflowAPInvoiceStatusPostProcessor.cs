@@ -69,7 +69,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         var notifyBUs = Guid.TryParse(statusMsg.Guid, out Guid itemGuid) && buLookup.TryGetValue(itemGuid, out IBusinessUnit bu)
                                         ? new IBusinessUnit[] { bu }
-                                        : statusMsg.BusinessUnits.Select(buName => new BusinessUnit(buName)).ToArray();
+                                        : statusMsg.BusinessUnits.Distinct().Select(buName => new BusinessUnit(buName)).ToArray();
                         return new RoutableItem<APInvoiceStatusMessage>()
                         {
                             DataType = DataTypes.apinvoicestatusmessage,

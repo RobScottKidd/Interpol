@@ -70,7 +70,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         var itemGuid = payment.InvoiceGuid;
                         var notifyBUs = itemGuid.HasValue && buLookup.TryGetValue(itemGuid.Value, out IBusinessUnit bu)
                                         ? new IBusinessUnit[] { bu }
-                                        : payment.BusinessUnits.Select(buName => new BusinessUnit(buName)).ToArray();
+                                        : payment.BusinessUnits.Distinct().Select(buName => new BusinessUnit(buName)).ToArray();
                         return new RoutableItem<APPayment>()
                         {
                             DataType = DataTypes.appayment,

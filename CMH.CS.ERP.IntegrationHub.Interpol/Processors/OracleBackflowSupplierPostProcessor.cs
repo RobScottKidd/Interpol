@@ -56,6 +56,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         MessageType = EventClass.Detail,
                         Model = supplier,
                         RoutingKeys = supplier.BusinessUnits
+                            .Distinct()
                             .Select(buName => new BusinessUnit(buName))
                             .Select(notifyBU => new EMBRoutingKeyInfo()
                             {

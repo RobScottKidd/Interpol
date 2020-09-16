@@ -1,5 +1,4 @@
-﻿using CMH.CS.ERP.IntegrationHub.Interpol.Biz.ScheduleService;
-using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
+﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models.Mappers;
 using Microsoft.Extensions.Logging;
 using System;

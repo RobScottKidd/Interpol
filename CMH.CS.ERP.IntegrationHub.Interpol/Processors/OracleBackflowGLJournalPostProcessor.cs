@@ -69,7 +69,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     {
                         var notifyBUs = Guid.TryParse(glJournal.JournalGuid, out Guid itemGuid) && buLookup.TryGetValue(itemGuid, out IBusinessUnit bu)
                                         ? new IBusinessUnit[] { bu }
-                                        : glJournal.BusinessUnits.Select(buName => new BusinessUnit(buName)).ToArray();
+                                        : glJournal.BusinessUnits.Distinct().Select(buName => new BusinessUnit(buName)).ToArray();
                         return new RoutableItem<GLJournal>()
                         {
                             DataType = DataTypes.gljournal,
