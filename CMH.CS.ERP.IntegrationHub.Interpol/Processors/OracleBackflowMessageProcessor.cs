@@ -128,7 +128,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                         IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
                             eventClass: messageType,
-                            item: item as object,
+                            item: item.Model as object,
                             source: usableRoutingKey.BusinessUnit.BUAbbreviation,
                             eventType: item.EventType,
                             eventSubType: itemStatus,
