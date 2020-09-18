@@ -102,7 +102,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
         {
             _connectionProvider = connectionProvider;
             _tokenSource = tokenSource;
-            _services.AddTransient((sp) => _connectionProvider.GetConnection());
+            _services.AddTransient(sp => _connectionProvider);
 
             var serviceProvider = _services.BuildServiceProvider();
 
