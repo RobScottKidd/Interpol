@@ -6,6 +6,7 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Models;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 using FakeItEasy;
+//using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using NUnit.Framework;
 using System;
@@ -29,7 +30,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         {
             var testDataType = DataTypes.supplier;
             var testBU = new BusinessUnit() { BUName = "testBU" };
-            var serviceProvider = A.Fake<IServiceProvider>();
             var gateway = A.Fake<IInterpolOracleGateway>();
             var logger = A.Fake<ILogger<SchedulerTask<Supplier>>>();
             var fileExporter = A.Fake<IFileExporter>();
@@ -45,9 +45,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
 
             var fakeTask = new SchedulerTask<Supplier>(gateway, logger, fileExporter, config, dataCache, datetimeProvider, instanceKeyProvider, taskRepo, buDatatypeLockRepo, taskLogRepo, backflowProcessor, postProcessors);
 
-            A.CallTo(() => serviceProvider.GetService(A<Type>.Ignored)).Returns(new[] { fakeTask });
-
-            var factory = new SchedulerTaskFactory(serviceProvider);
+            var factory = new SchedulerTaskFactory(new List<ISchedulerTask>() { fakeTask });
             var schedulerTask = factory.GetSchedulerTask(testDataType, testBU);
 
             Assert.AreEqual(testDataType, schedulerTask.DataType);

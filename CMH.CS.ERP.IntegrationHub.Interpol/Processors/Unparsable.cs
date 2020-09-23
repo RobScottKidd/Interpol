@@ -1,11 +1,9 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
-using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
-using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Interfaces;
 using System;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
-    public class Unparsable : IUnparsable, IEMBRoutingKeyProvider, IAlternateDataTypeProvider, IVersionableModel
+    public class Unparsable : IUnparsable
     {
         public string Xml { get; set; }
 

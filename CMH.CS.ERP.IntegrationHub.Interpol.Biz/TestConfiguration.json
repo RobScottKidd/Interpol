@@ -1,82 +1,4 @@
 {
-  "AvailableBatches": [
-    {
-      "BatchID": "B7925E5B-239D-44E4-A8D7-491031066060",
-      "BatchItemID": "F3E6519B-DFA4-44DC-9074-6EF78C9545D7",
-      "SubmittedDate": "2020-05-13 16:26:44.0773428 -04:00",
-      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
-      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
-      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
-      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
-      "StatusID": "00000000-0000-0000-0000-000000000009",
-      "ClaytonBusinessUnit": "Corporate",
-      "ApplicationName": "CONCUR",
-      "SourceServer": "AS400",
-      "Priority": "5",
-      "NotificationInterval": "5",
-      "MaxWait": "5",
-      "Successful": null,
-      "Source": "",
-      "ProcessId": "66925E5B-238D-41E4-A8E7-491039566061"
-    },
-    {
-      "BatchID": "B9B053E2-3E31-4439-92EF-E582512C131E",
-      "BatchItemID": "E8DD858F-C783-4C6F-97D4-833974ACDAED",
-      "SubmittedDate": "2020-05-14 12:15:50.6704855 -04:00",
-      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
-      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
-      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
-      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
-      "StatusID": "00000000-0000-0000-0000-000000000009",
-      "ClaytonBusinessUnit": "Corporate",
-      "ApplicationName": "CONCUR",
-      "SourceServer": "AS400",
-      "Priority": "5",
-      "NotificationInterval": "5",
-      "MaxWait": "5",
-      "Successful": null,
-      "Source": "CONCUR",
-      "ProcessId": "60925E5B-238D-41E4-A8C7-491039566061"
-    },
-    {
-      "BatchID": "582221C3-D934-479F-847F-F7586183EE13",
-      "BatchItemID": "9013F2AC-1E7F-4661-9F2F-F2B4AA66C0D9",
-      "SubmittedDate": "2020-05-13 22:00:32.9207720 -04:00",
-      "CanonicalTypeID": "00000000-0000-0000-0000-000000000001",
-      "BusinessUnitID": "00000000-0000-0000-0000-000000000003",
-      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Corporate\",\"ApplicationName\":\"CONCUR\",\"SourceServer\":\"AS400\",\"Priority\":5,\"NotificationInterval\":5,\"MaxWait\":5,\"NumberOfItems\":1}",
-      "ItemJSON": "{ \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"InvoiceId\": 0, \"BusinessUnit\": \"Corporate\", \"BusinessCategory\":\"Corporate\", \"Source\": \"CONCUR\", \"InvoiceNumber\": \"CONCUR-12345 10 Test\", \"InvoiceAmount\": 150.55, \"InvoiceDate\": \"2020-04-15\", \"SupplierName\": \"IHTC-001.InvoiceBatchTestSupplier\", \"SupplierNumber\": \"218030\", \"SupplierSite\": \"corporate\", \"InvoiceCurrency\": \"USD\", \"PaymentCurrency\": \"USD\", \"Description\": \"Solomon Test at 4:02\", \"InvoiceType\": \"STANDARD\", \"PaymentTerms\": \"Immediate\", \"TermsDate\": \"2020-04-15\", \"AccountingDate\": \"2020-04-15\", \"PaymentMethod\": \"CHECK\", \"InvoiceLines\": [ { \"Guid\": \"101a9748-82eb-34e6-977e-d01be6718ebf\", \"LineNumber\": 1, \"LineType\": \"ITEM\", \"Amount\": 150.55, \"Description\": \"Test sent\", \"DistributionCombination\": \"E200-L00000-A150001-C9999-P999-E999-99999-99999\", \"BusinessCategory\": \"Corporate\", \"DealInvoiceDate\": \"0001-01-01\", \"EmployeeNumber\": 1625, \"InvoiceId\": 0 } ], \"Version\": \"V1.2\" }",
-      "StatusID": "00000000-0000-0000-0000-000000000009",
-      "ClaytonBusinessUnit": "Corporate",
-      "ApplicationName": "CONCUR",
-      "SourceServer": "AS400",
-      "Priority": "5",
-      "NotificationInterval": "5",
-      "MaxWait": "5",
-      "Successful": null,
-      "Source": "CONCUR",
-      "ProcessId": "66929E57-231D-41E4-A8E7-491035566061"
-    },
-    {
-      "BatchID": "6A1FBEDB-531F-48FC-B8EB-5BF08DE71027",
-      "BatchItemID": "8EE90562-EACC-45A7-8FA7-79F3AF61F24F",
-      "SubmittedDate": "2020-05-14 12:17:35.0380519 -04:00",
-      "CanonicalTypeID": "00000000-0000-0000-0000-00000000000B",
-      "BusinessUnitID": "00000000-0000-0000-0000-000000000002",
-      "HeaderJson": "{\"ClaytonBusinessUnit\":\"Retail\",\"ApplicationName\":\"some application\",\"SourceServer\":\"server\",\"Priority\":5,\"NotificationInterval\":12345,\"MaxWait\":12345,\"NumberOfItems\":9}",
-      "ItemJSON": "{ \"Version\": \"v1.2\", \"Guid\": \"151a9748-82eb-44e1-977e-d01be6718ebf\", \"TransactionDate\": \"2020-02-21\", \"TransactionNumber\": \"2079226_21st_009\", \"LedgerName\": \"Clayton GAAP USD\", \"TransactionType\": \"PROP_TRANSACTIONS\", \"Source\": \"Felipe\", \"Lines\": [ { \"Guid\": \"151a9748-82eb-44e1-977e-d01be6718ebf\", \"TransactionNumber\": \"14213_980FC\", \"DefaultAmount\": 0.0, \"DefaultCurrency\": \"USD\", \"Event\": \"PURCHASE\", \"TattooComp\": \"TVALUE\", \"MasterDealerNumber\": 13579, \"InvestorNumber\": 93751, \"LoanType\": \"TYPE4C\", \"LenderCode\": \"63\", \"ProductNumber\": 20.0, \"DeedOfTrust\": \"DOT\", \"LotNumber\": 123456, \"DealInvoiceDate\": \"2020-02-15\", \"InvestorType\": \"ATTR10\", \"OriginalCreditScore\": 123456, \"Status\": \"ERROR\", \"State\": \"CONF\", \"DeedRecordDate\": \"2020-02-15\", \"ForeclosureSaleDate\": \"2020-02-15\", \"ModificationFlag\": \"MFLAG\", \"HampFlag\": \"HFLAG\", \"ToeFlag\": \"TFLAG\", \"PlanConfirmDate\": \"2020-02-15\", \"SourceCode\": \"SCODE\", \"Reference\": 123456, \"Description\": \"Description could be anything\", \"Control\": \"CONTROL\", \"LoanNumber\": 123456, \"LoanTransferNumber\": 123456, \"ApplicationId\": \"AID\", \"StockNumber\": \"SNumber\" } ] }",
-      "StatusID": "00000000-0000-0000-0000-000000000009",
-      "ClaytonBusinessUnit": "Retail",
-      "ApplicationName": "some application",
-      "SourceServer": "server",
-      "Priority": "5",
-      "NotificationInterval": "12345",
-      "MaxWait": "12345",
-      "Successful": null,
-      "Source": "",
-      "ProcessId": "66925ECD-238D-41E4-A8E7-499562566061"
-    }
-  ],
   "DocumentLoadCriteria": [
     {
       "FileName": "apinvoice_import_1.zip",
@@ -127,6 +49,17 @@
       "DocumentAccount": null,
       "DocumentName": "AP Test #1",
       "DocumentId": "ap-invoices-doc-id-1"
+    },
+    {
+      "Content": "<InvoiceHeaders><Guid>151a9748-82eb-44e1-977e-d01be6718ebf</Guid><Status>APPROVED</Status><BusinessUnit>Corporate BU</BusinessUnit><Source>REFUND</Source><InvoiceNumber>Refund_Demo_16</InvoiceNumber><InvoiceAmount>64.44</InvoiceAmount><SupplierName xsi:nil=\"true\"/><SupplierNumber xsi:nil=\"true\"/><SupplierSite xsi:nil=\"true\"/><InvoiceCurrency>USD</InvoiceCurrency><PaymentCurrency>USD</PaymentCurrency><Description>REFUND TEST 55</Description><Group xsi:nil=\"true\"/><InvoiceType>PAYMENT REQUEST</InvoiceType><LegalEntity>CMH Services, Inc.</LegalEntity><PaymentTerms>Immediate</PaymentTerms><TermsDate>2019-06-24</TermsDate><AccountingDate>2019-07-10</AccountingDate><PaymentMethod xsi:nil=\"true\"/><PayGroup xsi:nil=\"true\"/><PayAlone>N</PayAlone><ConversionRateType xsi:nil=\"true\"/><ConversionDate xsi:nil=\"true\"/><ConversionRate xsi:nil=\"true\"/><PaymentPriority xsi:nil=\"true\"/><OverrideWithholdingTaxGroup xsi:nil=\"true\"/><CheckName xsi:nil=\"true\"/><MemoLine xsi:nil=\"true\"/><SubMemoLine xsi:nil=\"true\"/><BusinessCategory xsi:nil=\"true\"/><RetailerNumber xsi:nil=\"true\"/><InvoiceId>18005</InvoiceId><InvoiceDate>2019-06-24</InvoiceDate><invoiceId>18005</invoiceId><GUID xsi:nil=\"true\"/><InvoiceLines><LineNumber>1</LineNumber><LineType>ITEM</LineType><Amount>64.44</Amount><InvoiceQuantity xsi:nil=\"true\"/><UnitPrice xsi:nil=\"true\"/><UnitOfMeasure xsi:nil=\"true\"/><Description>ONE TIME PAYMENT LINES</Description><DistributionCombination>E602-L99999A900103-C9999P999-E99999999-99999</DistributionCombination><DistributionSet xsi:nil=\"true\"/><WithholdingTaxGroup xsi:nil=\"true\"/><TrackasFixedAsset>N</TrackasFixedAsset><FixedAssetBookTypeCode xsi:nil=\"true\"/><OracleProjectNumber xsi:nil=\"true\"/><OracleTaskNumber xsi:nil=\"true\"/><BusinessCategory>VMF Escrow Refund</BusinessCategory><Tattoo>FREEDOM</Tattoo><MasterDealerNumber>2501</MasterDealerNumber><InvestorNumber>13</InvestorNumber><LenderCode>VM00</LenderCode><DeedofTrust>1</DeedofTrust><ProductNumber>1</ProductNumber><LoanType>C</LoanType><LotNumber>1</LotNumber><DealInvoiceDate>43101</DealInvoiceDate><InvestorType>W</InvestorType><ApplicationId xsi:nil=\"true\"/><PoNumber xsi:nil=\"true\"/><PolicyNumber xsi:nil=\"true\"/><ShortSerialNumber xsi:nil=\"true\"/><PartsInvoice xsi:nil=\"true\"/><PendingNumber xsi:nil=\"true\"/><LinkId xsi:nil=\"true\"/><EmployeeNumber xsi:nil=\"true\"/><LoanNumber xsi:nil=\"true\"/><LoanTransferNumber xsi:nil=\"true\"/><PlantNumber xsi:nil=\"true\"/><InvoiceId>18005</InvoiceId></InvoiceLines></InvoiceHeaders>",
+      "FileName": "AP_Payment_Request_Extract_1.xml",
+      "ContentType": "text/xml",
+      "DocumentTitle": "AP Payment Test #1",
+      "DocumentAuthor": "Caroline Lee",
+      "DocumentSecurityGroup": null,
+      "DocumentAccount": null,
+      "DocumentName": "AP Test #1",
+      "DocumentId": "ap-payments-doc-id-1"
     },
     {
       "Content": "<Header><Version>v1.2</Version><Guid>151a9748-82eb-44e1-977e-d01be6718ebf</Guid><TransactionDate>2020-02-21</TransactionDate><TransactionNumber>2079226_21st_009</TransactionNumber><LedgerName>Clayton GAAP USD</LedgerName><Status>CREATED</Status><Subledger>Retail</Subledger><AhAccountingDate>2020-02-21</AhAccountingDate></Header>",
@@ -264,6 +197,32 @@
                       {
                         "Name": "dID",
                         "Value": "ap-invoices-doc-id-1"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "Filename": "Corporate BU_AP_Payment_Request_Extract_1.xml",
+      "Response": {
+        "WebKey": "cs",
+        "Service": {
+          "IdcService": "GET_SEARCH_RESULTS",
+          "Document": {
+            "ResultSet": [
+              {
+                "Name": "SearchResults",
+                "Row": [
+                  {
+                    "Field": [
+                      {
+                        "Name": "dID",
+                        "Value": "ap-payments-doc-id-1"
                       }
                     ]
                   }

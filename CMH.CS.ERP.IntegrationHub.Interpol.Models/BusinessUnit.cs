@@ -9,6 +9,25 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
     public class BusinessUnit : IBusinessUnit
     {
         /// <summary>
+        /// Default constructor
+        /// </summary>
+        public BusinessUnit() { }
+
+        /// <summary>
+        /// Creates a new BusinessUnit with the provided name.
+        /// </summary>
+        /// <param name="buName">The business unit name</param>
+        public BusinessUnit(string buName)
+        {
+            BUAbbreviation = BUName =
+                (string.IsNullOrEmpty(buName) ? "unknown" : buName)
+                .Replace(" BU", "")
+                .Replace(" ", "")
+                .ToLower()
+                .Trim();
+        }
+
+        /// <summary>
         /// Unique identifier of the BU
         /// </summary>
         public Guid BusinessUnitID { get; set; }
@@ -22,10 +41,5 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
         /// Full BU name
         /// </summary>
         public string BUName { get; set; }
-
-        /// <summary>
-        /// Full Alternate name
-        /// </summary>
-        public string BUAlternateName { get; set; }
     }
 }

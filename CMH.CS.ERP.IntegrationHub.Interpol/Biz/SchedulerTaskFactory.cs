@@ -1,5 +1,5 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
-using CMH.CS.ERP.IntegrationHub.Interpol.Models;
+using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 using System;
 using System.Collections.Generic;
@@ -12,27 +12,22 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// </summary>
     public class SchedulerTaskFactory : ISchedulerTaskFactory
     {
-        private readonly IServiceProvider _serviceProvider;
+        private readonly IEnumerable<ISchedulerTask> _schedulerTasks;
 
-        public SchedulerTaskFactory(IServiceProvider serviceProvider)
+        public SchedulerTaskFactory(IEnumerable<ISchedulerTask> schedulerTasks)
         {
-            _serviceProvider = serviceProvider;
+            _schedulerTasks = schedulerTasks;
         }
 
         /// <inheritdoc/>
-        public ISchedulerTask GetSchedulerTask(params object[] properties)
+        public ISchedulerTask GetSchedulerTask(DataTypes dataType, IBusinessUnit businessUnit)
         {
-            var dataType = (DataTypes)properties[0];
-            var businessUnit = (IBusinessUnit)properties[1];
-            var taskType = typeof(IEnumerable<ISchedulerTask>);
-            var codeType = dataType.FromDataTypeToCodeType();
-
-            var registeredServices = _serviceProvider.GetService(taskType) as IEnumerable<ISchedulerTask>;
-            ISchedulerTask _task = registeredServices.FirstOrDefault(_service => _service.GetType().GetGenericArguments()[0] == codeType);
+            var codeType = FromDataTypeToCodeType(dataType);
+            ISchedulerTask _task = _schedulerTasks.FirstOrDefault(task => task.GetType().GenericTypeArguments?.FirstOrDefault() == codeType);
 
             if (_task is null)
             {
-                throw new NotImplementedException($"No {nameof(ISchedulerTask)} with generic implementation type of {codeType.Name} was registered");
+                throw new NotImplementedException($"No {nameof(ISchedulerTask)} with generic implementation type of {dataType} was registered");
             }
 
             _task.DataType = dataType;
@@ -40,5 +35,21 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
             return _task;
         }
+
+        private Type FromDataTypeToCodeType(DataTypes dataType) => dataType switch
+        {
+            DataTypes.apinvoice => typeof(APInvoice),
+            DataTypes.appaymentrequest => typeof(APPaymentRequest),
+            DataTypes.supplier => typeof(Supplier),
+            DataTypes.employeesync => typeof(EmployeeSync),
+            DataTypes.apinvoicestatusmessage => typeof(APInvoiceStatusMessage),
+            DataTypes.appaymentrequeststatusmessage => typeof(APPaymentRequestStatusMessage),
+            DataTypes.appayment => typeof(APPayment),
+            DataTypes.accountinghubstatusmessage => typeof(AccountingHubStatusMessage),
+            DataTypes.gljournal => typeof(GLJournal),
+            DataTypes.cashmanagementstatusmessage => typeof(CashManagementStatusMessage),
+            DataTypes.gljournalstatusmessage => typeof(GLJournalStatusMessage),
+            _ => throw new NotImplementedException($"No code type defined for { dataType }"),
+        };
     }
 }
