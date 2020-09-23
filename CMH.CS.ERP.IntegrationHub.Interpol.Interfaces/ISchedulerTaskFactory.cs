@@ -1,4 +1,6 @@
-﻿namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
+﻿using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
+
+namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
 {
     /// <summary>
     /// Defines the capabilities of the ISchedulerTaskFactory
@@ -9,8 +11,9 @@
         /// <summary>
         /// Generates a new scheduler task with the given properties
         /// </summary>
-        /// <param name="properties">variable list of properties assigned to the created task</param>
+        /// <param name="dataType">The datatype to process</param>
+        /// <param name="businessUnit">The business unit to process</param>
         /// <returns></returns>
-        ISchedulerTask GetSchedulerTask(params object[] properties);
+        ISchedulerTask GetSchedulerTask(DataTypes dataType, IBusinessUnit businessUnit);
     }
 }

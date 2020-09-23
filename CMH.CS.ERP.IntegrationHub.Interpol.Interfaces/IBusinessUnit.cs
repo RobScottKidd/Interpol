@@ -21,10 +21,5 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Interfaces
         /// Full BU name
         /// </summary>
         string BUName { get; set; }
-
-        /// <summary>
-        /// Full Alternate name
-        /// </summary>
-        string BUAlternateName { get; set; }
     }
 }

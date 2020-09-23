@@ -14,11 +14,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
     [ExcludeFromCodeCoverage]
     public class SqlProvider : ISqlProvider
     {
-        private readonly IDbConnection _connection;
+        private readonly IDbConnectionProvider _connectionProvider;
 
-        public SqlProvider(IDbConnection connection)
+        public SqlProvider(IDbConnectionProvider connectionProvider)
         {
-            _connection = connection;
+            _connectionProvider = connectionProvider;
         }
 
         /// <summary>
@@ -30,9 +30,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
         /// <returns></returns>
         public int ExecuteStoredProcedure(string storedProcedureName, object parameters, bool treatDataTableAsTvp = false)
         {
-            if (_connection.State != ConnectionState.Open)
+            using var connection = _connectionProvider.GetConnection();
+            if (connection.State != ConnectionState.Open)
             {
-                _connection.Open();
+                connection.Open();
             }
 
             var dynamicParams = new DynamicParameters();
@@ -54,7 +55,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
             int result;
             try
             {
-                result = _connection.Execute(storedProcedureName, parameters, commandType: CommandType.StoredProcedure);
+                result = connection.Execute(storedProcedureName, parameters, commandType: CommandType.StoredProcedure);
             }
             catch (Exception e)
             {
@@ -62,7 +63,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
             }
             finally
             {
-                _connection.Close();
+                connection.Close();
             }
 
             return result;
@@ -71,15 +72,16 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
         /// <inheritdoc/>
         public IEnumerable<T> QueryStoredProcedure<T>(string storedProcedureName, object parameters)
         {
-            if (_connection.State != ConnectionState.Open)
+            using var connection = _connectionProvider.GetConnection();
+            if (connection.State != ConnectionState.Open)
             {
-                _connection.Open();
+                connection.Open();
             }
 
             IEnumerable<T> result;
             try
             {
-                result = _connection.Query<T>(storedProcedureName, parameters, commandType: CommandType.StoredProcedure);
+                result = connection.Query<T>(storedProcedureName, parameters, commandType: CommandType.StoredProcedure);
             }
             catch (Exception e)
             {
@@ -87,7 +89,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Data
             }
             finally
             {
-                _connection.Close();
+                connection.Close();
             }
 
             return result;

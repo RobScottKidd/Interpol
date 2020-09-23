@@ -6,16 +6,14 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Biz;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models;
-using CMH.CSS.ERP.GlobalUtilities;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.CompilerServices;
-using Newtonsoft.Json;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
@@ -27,7 +25,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private readonly ILogger<InterpolOracleGateway> _logger;
         private readonly CommunicationConfiguration _config;
         private readonly IDataCache _dataCache;
-        private readonly IDateTimeProvider _dateTimeProvider;
         private readonly IMultistepOperationTimer _timer;
         private readonly IOracleServiceFactory _oracleServiceFactory;
         private readonly IScheduleReportNameProvider _reportNameProvider;
@@ -40,7 +37,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             ILogger<InterpolOracleGateway> logger,
             IBaseConfiguration<CommunicationConfiguration> config,
             IDataCache dataCache,
-            IDateTimeProvider dateTimeProvider,
             IMultistepOperationTimer timer,
             ITaskLogRepository<TaskLog> taskLogRepo,
             IOracleServiceFactory oracleServiceFactory,
@@ -49,7 +45,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _logger = logger;
             _config = config.Value;
             _dataCache = dataCache;
-            _dateTimeProvider = dateTimeProvider;
             _timer = timer;
             _taskLogRepo = taskLogRepo;
             _oracleServiceFactory = oracleServiceFactory;
@@ -176,7 +171,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     jobId = await scheduleService.ScheduleReportAsync(scheduleRequest);
                     break;
                 }
-                catch(TimeoutException e)
+                catch (TimeoutException e)
                 {
                     throw new EndpointTimeoutException($"Endpoint timeout occurred during creation of report job", e, null, null, endpointAction);
                 }
@@ -216,7 +211,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     jobInstances = await scheduleService.GetAllJobInstanceIDsAsync(requestId);
                     break;
                 }
-                catch(TimeoutException e)
+                catch (TimeoutException e)
                 {
                     throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of job instance with requestId {requestId}", e, null, null, endpointAction);
                 }
@@ -295,7 +290,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     await Task.Delay(_config.ReportJobInfoRequestDelay);
                     continue;
                 }
-                catch(TimeoutException e)
+                catch (TimeoutException e)
                 {
                     throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of job status", e, jobInstanceId, null, endpointAction);
                 }
@@ -410,7 +405,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     documentId = documentIds.Single();
                     break;
                 }
-                catch(TimeoutException e)
+                catch (TimeoutException e)
                 {
                     throw new EndpointTimeoutException($"Endpoint timeout occurred during retrieval of document id", e, null, null, endpointAction); 
                 }
@@ -447,7 +442,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     documentDetails = await integrationService.GetDocumentForDocumentIdAsync(documentId);
                     break;
                 }
-                catch(TimeoutException e)
+                catch (TimeoutException e)
                 {
                     throw new EndpointTimeoutException($"Endpoint timeout occurred while retrieving document", e, null, documentId, endpointAction); 
                 }
@@ -495,7 +490,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             AddParametersToRequest(paramGroup, scheduleRequest, startDate, endDate, includeEndDate, businessUnit);
 
             //scheduleRequest.TrySerializeJson(Formatting.None, out string result);
-           // _logger.LogTrace($"Report Parameter: {result}");
+            //_logger.LogTrace($"Report Parameter: {result}");
             _logger.LogInformation("Creating report request");
 
             // make the request, obtain the result

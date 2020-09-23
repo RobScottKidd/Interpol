@@ -102,7 +102,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
         {
             _connectionProvider = connectionProvider;
             _tokenSource = tokenSource;
-            _services.AddTransient((sp) => _connectionProvider.GetConnection());
+            _services.AddTransient(sp => _connectionProvider);
 
             var serviceProvider = _services.BuildServiceProvider();
 
@@ -190,49 +190,98 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                 .AddSingleton<IDataCache, DataCache>()
                 .AddTransient<ISchedulerTaskFactory, SchedulerTaskFactory>()
                 .AddTransient<IMessageProcessor, OracleBackflowMessageProcessor>()
-                .AddTransient<IDirectedMessageProcessor, DirectedMessageProcessor>()
                 .AddTransient<IAggregateMessageProcessor, OracleBackflowAggregateMessageProcessor>()
                 .AddTransient<IReportXmlExtractor, ReportXmlExtractor>()
                 .AddSingleton<IScheduleReportNameProvider, ScheduleReportNameProvider>()
                 .AddSingleton<IOracleServiceFactory, OracleServiceFactory>()
                 .AddSingleton<ITestController, TestController>()
                 .AddTransient<IInterpolOracleGateway, InterpolOracleGateway>()
-                .AddTransient<IEMBRoutingKeyGenerator, EMBRoutingKeyGenerator>()
                 .AddTransient<IReportTaskDetailRepository, ReportTaskDetailRepository>()
                 .AddTransient<IBUDataTypeLockRepository, BUDataTypeLockRepository>()
-                .AddTransient<ISchedulerTask, SchedulerTask<CSS.ERP.IntegrationHub.CanonicalModels.AccountingHubStatusMessage>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<AccountingHubStatusMessage>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APInvoice>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<CSS.ERP.IntegrationHub.CanonicalModels.APInvoiceStatusMessage>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<APPaymentWithDocument>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<APInvoiceStatusMessage>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<APPayment>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APPaymentRequest>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<CSS.ERP.IntegrationHub.CanonicalModels.CashManagementStatusMessage>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<APPaymentRequestStatusMessage>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<CashManagementStatusMessage>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<GLJournal>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<CSS.ERP.IntegrationHub.CanonicalModels.GLJournalStatusMessage>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<GLJournalStatusMessage>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<Supplier>>()
                 .AddSingleton<IInstanceKeyProvider, InstanceKeyProvider>()
                 .AddSingleton<IEnvironmentProvider, EnvironmentProvider>(serviceProvider => new EnvironmentProvider(GetAssemblyConfigValue("DeploymentEnvironment")))
                 .AddSingleton<IJsonSettingsProvider, JsonSettingsProvider>()
                 .AddSingleton<IMultistepOperationTimer, MultiStepOperationTimer>()
-                .AddSingleton<IOracleBackflowProcessor<CSS.ERP.IntegrationHub.CanonicalModels.AccountingHubStatusMessage>, OracleBackflowAccountingHubProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<CSS.ERP.IntegrationHub.CanonicalModels.AccountingHubStatusMessage>, OracleBackflowAccountingHubPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<APInvoice>, OracleBackflowAPInvoiceProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<AccountingHubStatusMessage>>(
+                    serviceProvider => new OracleBackflowProcessor<AccountingHubStatusMessage>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<AccountingHubStatusMessage>>>(),
+                        "Header"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<AccountingHubStatusMessage>, OracleBackflowAccountingHubPostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<APInvoice>>(
+                    serviceProvider => new OracleBackflowProcessor<APInvoice>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APInvoice>>>(),
+                        "InvoiceHeaders"
+                    )
+                )
                 .AddSingleton<IOracleBackflowPostProcessor<APInvoice>, OracleBackflowAPInvoicePostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<CSS.ERP.IntegrationHub.CanonicalModels.APInvoiceStatusMessage>, OracleBackflowAPInvoiceStatusProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<CSS.ERP.IntegrationHub.CanonicalModels.APInvoiceStatusMessage>, OracleBackflowAPInvoiceStatusPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<APPaymentWithDocument>, OracleBackflowAPPaymentProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<APPaymentWithDocument>, OracleBackflowAPPaymentPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<APPaymentRequest>, OracleBackflowAPPaymentRequestProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<APInvoiceStatusMessage>>(
+                    serviceProvider => new OracleBackflowProcessor<APInvoiceStatusMessage>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APInvoiceStatusMessage>>>(),
+                        "REJECTIONS"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<APInvoiceStatusMessage>, OracleBackflowAPInvoiceStatusPostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<APPayment>>(
+                    serviceProvider => new OracleBackflowProcessor<APPayment>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPayment>>>(),
+                        "Payments"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<APPayment>, OracleBackflowAPPaymentPostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<APPaymentRequest>>(
+                    serviceProvider => new OracleBackflowAPPaymentRequestProcessor(
+                        serviceProvider.GetService<IOracleBackflowProcessor<APInvoice>>(),
+                        serviceProvider.GetService<ILogger<OracleBackflowAPPaymentRequestProcessor>>(),
+                        "InvoiceHeaders"
+                    )
+                )
                 .AddSingleton<IOracleBackflowPostProcessor<APPaymentRequest>, OracleBackflowAPPaymentRequestPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage>, OracleBackflowAPPaymentRequestStatusProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<CSS.ERP.IntegrationHub.CanonicalModels.APPaymentRequestStatusMessage>, OracleBackflowAPPaymentRequestStatusPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<CSS.ERP.IntegrationHub.CanonicalModels.CashManagementStatusMessage>, OracleBackflowCashManagementStatusProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<CSS.ERP.IntegrationHub.CanonicalModels.CashManagementStatusMessage>, OracleBackflowCashManagementStatusPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<GLJournal>, OracleBackflowGLJournalProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<APPaymentRequestStatusMessage>>(
+                    serviceProvider => new OracleBackflowProcessor<APPaymentRequestStatusMessage>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPaymentRequestStatusMessage>>>(),
+                        "Rejections"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<APPaymentRequestStatusMessage>, OracleBackflowAPPaymentRequestStatusPostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<CashManagementStatusMessage>>(
+                    serviceProvider => new OracleBackflowProcessor<CashManagementStatusMessage>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<CashManagementStatusMessage>>>(),
+                        "G_1"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<CashManagementStatusMessage>, OracleBackflowCashManagementStatusPostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<GLJournal>>(
+                    serviceProvider => new OracleBackflowProcessor<GLJournal>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<GLJournal>>>(),
+                        "G_1"
+                    )
+                )
                 .AddSingleton<IOracleBackflowPostProcessor<GLJournal>, OracleBackflowGLJournalPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<CSS.ERP.IntegrationHub.CanonicalModels.GLJournalStatusMessage>, OracleBackflowGLJournalStatusMessageProcessor>()
-                .AddSingleton<IOracleBackflowPostProcessor<CSS.ERP.IntegrationHub.CanonicalModels.GLJournalStatusMessage>, OracleBackflowGLJournalStatusMessagePostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<Supplier>, OracleBackflowSupplierProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<GLJournalStatusMessage>>(
+                    serviceProvider => new OracleBackflowProcessor<GLJournalStatusMessage>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<GLJournalStatusMessage>>>(),
+                        "G_1"
+                    )
+                )
+                .AddSingleton<IOracleBackflowPostProcessor<GLJournalStatusMessage>, OracleBackflowGLJournalStatusMessagePostProcessor>()
+                .AddSingleton<IOracleBackflowProcessor<Supplier>>(
+                    serviceProvider => new OracleBackflowProcessor<Supplier>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<Supplier>>>(),
+                        "Supplier"
+                    )
+                )
                 .AddSingleton<IOracleBackflowPostProcessor<Supplier>, OracleBackflowSupplierPostProcessor>();
         }
 

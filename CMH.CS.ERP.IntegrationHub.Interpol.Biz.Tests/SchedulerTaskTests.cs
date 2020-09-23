@@ -461,8 +461,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 {
                     BusinessUnitID = Guid.NewGuid(),
                     BUAbbreviation = "APInvoice",
-                    BUName = "APInvoice",
-                    BUAlternateName = "APInvoice"
+                    BUName = "APInvoice"
                 }
             };
         }

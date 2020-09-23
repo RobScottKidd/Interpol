@@ -7,6 +7,7 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
@@ -14,7 +15,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     public class OracleBackflowAggregateMessageProcessor : IAggregateMessageProcessor
     {
         private readonly IMessageBusConnector _connector;
-        private readonly ILogger<IAggregateMessageProcessor> _logger;
+        private readonly ILogger<OracleBackflowAggregateMessageProcessor> _logger;
         private readonly IBUDataTypeLockRepository _buDataTypeLockRepo;
         private readonly IInterpolConfiguration _config;
         private readonly IDateTimeProvider _dateTimeProvider;
@@ -24,12 +25,18 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         private DateTime nextReleaseTime;
 
         /// <summary>
-        /// Constructor
+        /// DI constructor
         /// </summary>
+        /// <param name="connector">The EMB connector</param>
+        /// <param name="config">The INTERPOL configuration</param>
+        /// <param name="logger">The class logger</param>
+        /// <param name="dateTimeProvider">The datetime provider</param>
+        /// <param name="idProvider">The ID provider</param>
+        /// <param name="buDataTypeLockRepo">The repository for maintaining datatype and BU locks</param>
         public OracleBackflowAggregateMessageProcessor(
             IMessageBusConnector connector,
             IInterpolConfiguration config,
-            ILogger<IAggregateMessageProcessor> logger,
+            ILogger<OracleBackflowAggregateMessageProcessor> logger,
             IDateTimeProvider dateTimeProvider,
             IIDProvider idProvider,
             IBUDataTypeLockRepository buDataTypeLockRepo
@@ -42,35 +49,20 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             _buDataTypeLockRepo = buDataTypeLockRepo;
         }
 
-        public int Process<T>(IAggregateMessage<T>[] items, IBusinessUnit businessUnit, string dataType, DateTime lockReleaseTime, Guid processId)
+        /// <inheritdoc/>
+        public int Process<T>(List<IAggregateMessage<T>> items, IBusinessUnit businessUnit, string dataType, DateTime lockReleaseTime, Guid processId)
         {
             // look at next release time minus 1 min for overlap; smaller chance of being picked up by another process
             nextReleaseTime = lockReleaseTime.AddMinutes(LOCKTIME_OVERLAP);
             int messageCount = 0;
-
-            if (items != null)
+            
+            items?.ForEach(item =>
             {
-                foreach (var item in items)
-                {
-                    string reworkedBU = null;
-                    string routingKey = null;
+                SendMessage(item, dataType);
+                messageCount++;
 
-                    if (item.BusinessUnit.Contains(' '))
-                    {
-                        int index = item.BusinessUnit.IndexOf(' ');
-                        reworkedBU = item.BusinessUnit.Substring(0, index);
-                        routingKey = $"{reworkedBU.ToLower()}.erp.{dataType}";
-                    }
-                    else
-                    {
-                        routingKey = $"{item.BusinessUnit.ToLower()}.erp.{dataType}";
-                    }
-                    messageCount++;
-
-                    SendMessage(item, routingKey, EventClass.Notice, typeof(T).Name);
-                    CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);
-                }
-            }
+                CheckLockTimeoutSuccessful(businessUnit.BUAbbreviation, dataType, processId);
+            });
 
             return messageCount;
         }
@@ -90,14 +82,12 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 {
                     var lockDuration = _config.RowLockTimeout;
                     int updateLockResult = _buDataTypeLockRepo.UpdateLockForPolling(bu, dataType, processId, lockDuration);
-                    if (updateLockResult != 0)
-                    {
-                        nextReleaseTime = _dateTimeProvider.CurrentTime.AddMinutes(lockDuration + LOCKTIME_OVERLAP);
-                    }
-                    else
+                    if (updateLockResult == 0)
                     {
                         throw new Exception("Update Lock Result returned 0");
+                        
                     }
+                    nextReleaseTime = _dateTimeProvider.CurrentTime.AddMinutes(lockDuration + LOCKTIME_OVERLAP);
                 }
                 catch (Exception ex)
                 {
@@ -106,7 +96,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             }
         }
 
-        public void ValidateMessage(IEventMessage<object> eventMessage)
+        private void ValidateMessage(IEventMessage<object> eventMessage)
         {
             if (string.IsNullOrEmpty(eventMessage.EventSubType))
             {
@@ -116,66 +106,65 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         }
 
         /// <summary>
-        /// Sends a single
+        /// Sends a single aggregate message on the EMB
         /// </summary>
         /// <param name="item"></param>
-        /// <param name="usableRoutingKey"></param>
-        public void SendMessage<T>(IAggregateMessage<T> item, string usableRoutingKey, EventClass messageType, string itemType)
+        /// <param name="dataType"></param>
+        private void SendMessage<T>(IAggregateMessage<T> item, string dataType)
         {
-            if (usableRoutingKey != null)
+            string notifyBU = item.BusinessUnit.ToLower();
+            if (notifyBU.Contains(' '))
             {
-                _logger.LogInformation($"Sending message to RabbitMQ with key {usableRoutingKey} ");
+                int index = notifyBU.IndexOf(' ');
+                notifyBU = notifyBU.Substring(0, index);
+            }
 
-                var keySplit = usableRoutingKey.Split('.');
-                for (int retryCount = 0; retryCount <= _config.PublishRetryCount; retryCount++)
+            string routingKey = $"{notifyBU}.erp.{dataType}";
+            _logger.LogInformation($"Sending message to RabbitMQ with key {routingKey}");
+
+            for (int retryCount = 0; retryCount <= _config.PublishRetryCount; retryCount++)
+            {
+                try
                 {
-                    try
-                    {
-                        IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
-                                eventClass: messageType,
-                                item: item.Messages as object,
-                                source: keySplit[0],
-                                eventType: typeof(T).Name.QueueNameFromDataTypeName(),
-                                eventSubType: item.Status,
-                                processId: "",
-                                idProvider: _idProvider,
-                                dateTimeProvider: _dateTimeProvider,
-                                version: item.Version
-                            );
+                    IEMBEvent<object> eventMessage = EMBMessageBuilder.BuildMessage(
+                        eventClass: EventClass.Notice,
+                        item: item.Messages as object,
+                        source: notifyBU,
+                        eventType: item.EventType,
+                        eventSubType: item.Status,
+                        processId: string.Empty,
+                        idProvider: _idProvider,
+                        dateTimeProvider: _dateTimeProvider,
+                        version: item.Version
+                    );
 
-                        // adding new logic here to validate some basic required fields in the message
-                        ValidateMessage(eventMessage);
+                    ValidateMessage(eventMessage);
 
-                        // todo: We probably want to move the exhange format our into configuration at some point
-                        eventMessage.Exchange = $"corporate.erp.{keySplit[2]}";
-                        eventMessage.RoutingKey = usableRoutingKey;
-
-                        //TODO: Remove once Notice Messages are approved
-                        //string output = JsonConvert.SerializeObject(eventMessage);
-                        //System.IO.File.WriteAllText(@$"C:\Messages\{itemType.QueueNameFromDataTypeName()}{Guid.NewGuid()}.txt", output);
+                    // todo: We probably want to move the exhange format into configuration at some point
+                    eventMessage.Exchange = $"corporate.erp.{dataType}";
+                    eventMessage.RoutingKey = routingKey;
                                                
-                        if (!_connector.PublishEventMessage(eventMessage))
-                        {
-                            throw new Exception($"Publishing event message failed {usableRoutingKey}");
-                        }
-
-                        break;
-                    }
-                    catch (Exception e)
+                    if (!_connector.PublishEventMessage(eventMessage))
                     {
-                        // in the event of a send failure on a single message, I do not want it to not try to send them all
-                        _logger.LogError(e, $"Could not send message with key {usableRoutingKey}");
+                        throw new Exception($"Publishing event message failed {routingKey}");
+                    }
 
-                        if (retryCount != _config.PublishRetryCount)
-                        {
-                            _logger.LogInformation("Waiting to retry publishing message {0}/{1}", retryCount + 1, _config.PublishRetryCount);
-                            // todo: we may want to make this whole processing async so we can await Task.Delay here...
-                            Thread.Sleep(_config.PublishRetryDelay.Value);
-                        }
-                        else
-                        {
-                            throw e;
-                        }
+                    break;
+                }
+                catch (Exception e)
+                {
+                    // in the event of a send failure on a single message, I do not want it to not try to send them all
+                    _logger.LogError(e, $"Could not send message with key {routingKey}");
+
+                    if (retryCount != _config.PublishRetryCount)
+                    {
+                        _logger.LogInformation("Waiting to retry publishing message {0}/{1}", retryCount + 1, _config.PublishRetryCount);
+                        // todo: we may want to make this whole processing async so we can await Task.Delay here...
+                        Thread.Sleep(_config.PublishRetryDelay.Value);
+                    }
+                    else
+                    {
+                        throw e;
                     }
                 }
             }

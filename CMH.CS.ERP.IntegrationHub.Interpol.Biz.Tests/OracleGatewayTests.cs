@@ -27,7 +27,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
         private IOracleSoapService _genericService;
         private IBaseConfiguration<CommunicationConfiguration> _config;
         private IDataCache _dataCache;
-        private IDateTimeProvider _dateTimeProvider;
         private ILogger<InterpolOracleGateway> _gatewayLogger;
         private IMultistepOperationTimer _timer;
         private ITaskLogRepository<TaskLog> _taskLogRepo;
@@ -41,7 +40,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             _scheduleService = A.Fake<IOracleScheduleService>();
             _integrationService = A.Fake<IOracleIntegrationService>();
             _genericService = A.Fake<IOracleSoapService>();
-            _dateTimeProvider = new DateTimeProvider();
             _gatewayLogger = A.Fake<ILogger<InterpolOracleGateway>>();
             _dataCache = A.Fake<IDataCache>();
             _timer = A.Fake<IMultistepOperationTimer>();
@@ -102,7 +100,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             // we check to make sure we get back a success status from our heartbeat/healthcheck gateway method
             A.CallTo(() => _integrationService.GetESSJobStatus(A<long>.Ignored, A<string>.Ignored)).Returns("Success");
             
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             string result = testGateway.TestServiceByGetStatus(1);
 
             Assert.AreEqual("Success", result);
@@ -115,7 +113,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(new JobDetail() { status = "Failed", statusDetail = "" });
 
-            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             Assert.ThrowsAsync<RetryException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
@@ -125,7 +123,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(new JobDetail() { status = "Failed", statusDetail = "Timeout"});
 
-            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             Assert.ThrowsAsync<TimeoutException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
@@ -135,7 +133,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(new JobDetail() { status = "Output has Error", statusDetail = ""});
 
-            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             Assert.ThrowsAsync<ReportJobErrorException>(() => sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype"));
         }
 
@@ -145,7 +143,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(new JobDetail() { status = "Success", statusDetail = ""});
                         
-            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var sut = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             JobDetail actual = await sut.GetReportStatus(_scheduleService, "1234456", "bu", "datatype");
 
             Assert.AreEqual("Success", actual.status);
@@ -202,7 +200,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _taskLogRepo.UpdateTaskLogWithJobId(A<Guid>.Ignored, A<string>.Ignored))
                 .Returns(1);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             string result = await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>());
 
             // we want to make sure that each method was called as there are 5 steps to gather a report request
@@ -223,7 +221,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetAllJobInstanceIDsAsync(A<string>.Ignored))
                 .Returns(Task.FromResult(new List<string>() { A.Dummy<string>() }));
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             Assert.ThrowsAsync<RetryException>(() => testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
 
             A.CallTo(() => _scheduleService.ScheduleReportAsync(A<ScheduleRequest>.Ignored)).MustHaveHappened()
@@ -249,7 +247,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _taskLogRepo.UpdateTaskLogWithJobId(A<Guid>.Ignored, A<string>.Ignored))
                 .Returns(1);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
 
             // something fail in the gateway             
             Assert.ThrowsAsync<RetryException>(async () => await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
@@ -314,7 +312,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _taskLogRepo.UpdateTaskLogWithJobId(A<Guid>.Ignored, A<string>.Ignored))
                 .Returns(1);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             string result = await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>());
 
             // we want to make sure that each method satisfies the retry count
@@ -341,7 +339,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _taskLogRepo.UpdateTaskLogWithJobId(A<Guid>.Ignored, A<string>.Ignored))
                 .Returns(1);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             Assert.ThrowsAsync<RetryException>(() => testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
             
             // the retry count for the first operation should be exceeded, which should have thrown the above exception,
@@ -367,7 +365,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 .Then.Returns(new List<string>() { jobInstanceId });
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored)).Throws(() => new Exception()).NumberOfTimes(3);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
 
             Assert.ThrowsAsync<RetryException>(() => testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
 
@@ -404,7 +402,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                    }
                }));
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             var ex = Assert.ThrowsAsync<RetryException>(async () => await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
             Assert.That(ex.Message.StartsWith("No search results returned from query"));
         }
@@ -445,7 +443,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                    }
                }));
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             var ex = Assert.ThrowsAsync<RetryException>(async () => await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
             
             Assert.That(ex.Message.StartsWith("No document id returned from query"));
@@ -507,7 +505,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
 
             var test = _dataCache.ReportParameters().First();
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
             var ex = Assert.ThrowsAsync<RetryException>(async () => await testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
             
             Assert.That(ex.Message.StartsWith("More than one document returned from query"));
@@ -532,7 +530,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _taskLogRepo.UpdateTaskLogWithJobId(A<Guid>.Ignored, A<string>.Ignored))
                 .Returns(1);
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
 
             Assert.ThrowsAsync<TimeoutException>(() => testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
         }
@@ -559,7 +557,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(Task.FromResult(new JobDetail() { status = timedOut }));
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory, _reportNameProvider);
 
             Assert.ThrowsAsync<RetryException>(() => testGateway.CreateAndRetrieveDataTypeFile(DataTypes.supplier, null, DateTime.Now, DateTime.Now, false, A.Dummy<Guid>()));
         }
@@ -572,7 +570,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 SchedulerServiceTerminalStatuses = new[] { "Canceled" }
             });
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(Task.FromResult(new JobDetail() { status = "Canceled" }));
             bool isRunning = await testGateway.GetIsReportJobRunning(A.Dummy<Guid>(), A.Dummy<string>(), A.Dummy<DataTypes>(), A.Dummy<string>());
@@ -588,7 +586,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Tests
                 SchedulerServiceTerminalStatuses = new[] { "Canceled" }
             });
 
-            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _dateTimeProvider, _timer, _taskLogRepo, _serviceFactory);
+            var testGateway = new InterpolOracleGateway(_gatewayLogger, _config, _dataCache, _timer, _taskLogRepo, _serviceFactory);
             A.CallTo(() => _scheduleService.GetScheduledJobInfoAsync(A<string>.Ignored))
                 .Returns(Task.FromResult(new JobDetail() { status = "Scheduled" }));
 
