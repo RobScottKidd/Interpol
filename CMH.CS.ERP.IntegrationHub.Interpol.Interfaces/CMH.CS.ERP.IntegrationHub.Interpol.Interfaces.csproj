@@ -10,7 +10,11 @@
 
   <ItemGroup> 
     <PackageReference Include="CMH.Common.Events" Version="1.0.0.28-develop" />
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.202-development" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.GlobalUtilities\CMH.CSS.ERP.GlobalUtilities.csproj" />
+    <ProjectReference Include="..\..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.IntegrationHub.CanonicalModels\CMH.CSS.ERP.IntegrationHub.CanonicalModels.csproj" />
   </ItemGroup>
 
 </Project>

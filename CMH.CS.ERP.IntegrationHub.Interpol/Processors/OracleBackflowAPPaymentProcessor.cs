@@ -7,7 +7,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// <summary>
     /// Supplier specfic implementation of the backflow processor
     /// </summary>
-    public class OracleBackflowAPPaymentProcessor : OracleBackflowProcessor<APPayment>
+    public class OracleBackflowAPPaymentProcessor : OracleBackflowProcessor<APPaymentWithDocument>
     {
         /// <summary>
         /// Base constructor
@@ -23,7 +23,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// </summary>
         /// <param name="xmlString">XML string from Oracle</param>
         /// <returns></returns>
-        public override IProcessingResultSet<APPayment> ProcessItems(string xmlString, string businessUnit)
+        public override IProcessingResultSet<APPaymentWithDocument> ProcessItems(string xmlString, string businessUnit)
         {
             return base.ProcessItems(xmlString, businessUnit);
         }
