@@ -129,9 +129,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                 try
                 {
                     // note: custom oracle report currently expects UTC timezone when providing date/time ranges
-                    //fileContents = await _gateway.CreateAndRetrieveDataTypeFile(DataType, $"{BusinessUnit.BUName} BU", startDate, endDate, includeEndDate, taskLogGuid);
+                    fileContents = await _gateway.CreateAndRetrieveDataTypeFile(DataType, $"{BusinessUnit.BUName} BU", startDate, endDate, includeEndDate, taskLogGuid);
                     //TODO: Leaving this in here because it is a good way to diagnose parsing issue with data. Comment out the above line and uncomment this one to read xml from a file
-                    fileContents = File.ReadAllText(@"C:\TestXML\appaymentwithdocument_test.xml");
+                    //fileContents = File.ReadAllText(@"C:\TestXML\appaymentwithdocument_test.xml");
 
                     _logger.LogInformation($"Oracle returned XML file of length { fileContents?.Length } (< 200 characters means the file was empty)");
 

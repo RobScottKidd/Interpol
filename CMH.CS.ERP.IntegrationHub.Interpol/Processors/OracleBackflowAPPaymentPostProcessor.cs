@@ -78,7 +78,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 
                 _logger.LogTrace($"{ buDatatype } published { messageCount }/{ itemsWithDocuments.Count() } messages, elapsed time: { actionStopwatch.Elapsed }");
 
-                actionStopwatch = new Stopwatch();
                 var allGuids = processingResults?.ProcessedItems
                                 ?.Where(x => x?.ProcessedItem?.InvoiceGuid != null)
                                 ?.Select(x => x.ProcessedItem.InvoiceGuid.Value)
