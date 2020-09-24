@@ -1,8 +1,8 @@
 ﻿using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
+using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
@@ -12,18 +12,19 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// </summary>
     public class SchedulerTaskFactory : ISchedulerTaskFactory
     {
-        private readonly IEnumerable<ISchedulerTask> _schedulerTasks;
+        private readonly IServiceProvider _serviceProvider;
 
-        public SchedulerTaskFactory(IEnumerable<ISchedulerTask> schedulerTasks)
+        public SchedulerTaskFactory(IServiceProvider serviceProvider)
         {
-            _schedulerTasks = schedulerTasks;
+            _serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
         public ISchedulerTask GetSchedulerTask(DataTypes dataType, IBusinessUnit businessUnit)
         {
             var codeType = FromDataTypeToCodeType(dataType);
-            ISchedulerTask _task = _schedulerTasks.FirstOrDefault(task => task.GetType().GenericTypeArguments?.FirstOrDefault() == codeType);
+            var _task = _serviceProvider.GetServices<ISchedulerTask>()
+                                        .FirstOrDefault(task => task.GetType().GenericTypeArguments?.FirstOrDefault() == codeType);
 
             if (_task is null)
             {
