@@ -25,10 +25,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMH.CS.ERP.IntegrationHub.I
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMH.CS.ERP.IntegrationHub.Interpol.Interfaces", "CMH.CS.ERP.IntegrationHub.Interpol.Interfaces\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.csproj", "{EB189022-211A-492D-9CB7-6D2B4B2AE5E2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMH.CSS.ERP.GlobalUtilities", "..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.GlobalUtilities\CMH.CSS.ERP.GlobalUtilities.csproj", "{00BF3441-75A8-49C5-A797-A3C108483E60}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CMH.CSS.ERP.IntegrationHub.CanonicalModels", "..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.IntegrationHub.CanonicalModels\CMH.CSS.ERP.IntegrationHub.CanonicalModels.csproj", "{5E304198-0982-4C8A-9014-CE1791FE5247}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug - ConsoleApp|Any CPU = Debug - ConsoleApp|Any CPU
@@ -280,54 +276,6 @@ Global
 		{EB189022-211A-492D-9CB7-6D2B4B2AE5E2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EB189022-211A-492D-9CB7-6D2B4B2AE5E2}.Release|x86.ActiveCfg = Release|Any CPU
 		{EB189022-211A-492D-9CB7-6D2B4B2AE5E2}.Release|x86.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - ConsoleApp|Any CPU.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - ConsoleApp|Any CPU.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - ConsoleApp|x86.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - ConsoleApp|x86.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - WinService|Any CPU.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - WinService|Any CPU.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - WinService|x86.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug - WinService|x86.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Debug|x86.Build.0 = Debug|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - ConsoleApp|Any CPU.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - ConsoleApp|Any CPU.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - ConsoleApp|x86.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - ConsoleApp|x86.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - WinService|Any CPU.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - WinService|Any CPU.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - WinService|x86.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release - WinService|x86.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release|Any CPU.Build.0 = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release|x86.ActiveCfg = Release|Any CPU
-		{00BF3441-75A8-49C5-A797-A3C108483E60}.Release|x86.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - ConsoleApp|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - ConsoleApp|Any CPU.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - ConsoleApp|x86.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - ConsoleApp|x86.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - WinService|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - WinService|Any CPU.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - WinService|x86.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug - WinService|x86.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Debug|x86.Build.0 = Debug|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - ConsoleApp|Any CPU.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - ConsoleApp|Any CPU.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - ConsoleApp|x86.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - ConsoleApp|x86.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - WinService|Any CPU.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - WinService|Any CPU.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - WinService|x86.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release - WinService|x86.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release|x86.ActiveCfg = Release|Any CPU
-		{5E304198-0982-4C8A-9014-CE1791FE5247}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
