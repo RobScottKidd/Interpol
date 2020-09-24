@@ -28,29 +28,44 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Processors
         }
 
         /// <inheritdoc />
-        public void Process(object[] items, string businessUnit, string exchangeName, string routingKey)
+        public int Process(object[] items, string businessUnit, string exchangeName, string routingKey)
         {
+
+            int cnt = 0;
             foreach (var item in items)
             {
-                if (!(item is IIdProvider<object>))
-                {
-                    _logger.LogInformation($"Item encountered that does not provide the necessary id to be dispatched to Rabbit");
-                }
-
-                var messageItem = item ;
-                _logger.LogInformation($"Sending message to RabbitMQ for item {(item as IIdProvider<object>).ID} with key {routingKey}");
+                var eventID = Guid.NewGuid();
 
                 EMBEvent<object> eventMessage = new EMBEvent<object>()
                 {
-
+                    EventID = eventID,
+                    Source = businessUnit,
+                    Reporter = businessUnit,
+                    ProcessInitiator ="",
+                    ProcessId ="",
+                    EventDate =DateTime.Now,
+                    EventType ="IPC",
+                    EventSubType ="APImages",
+                    EventVersion ="v1",
+                    EventClass = EventClass.Notice,
+                    Payload = item
                 };
 
-                // todo [SnyderM 9/27/19]: how do we want to handle retries for publish?
-                if (!_connector.PublishEventMessage(eventMessage))
+                eventMessage.Exchange = exchangeName;
+                eventMessage.RoutingKey = routingKey;
+
+                var publishResults = _connector.PublishEventMessage(eventMessage);
+                if (!publishResults)
                 {
-                    throw new Exception($"Publishing IPC message failed {routingKey}");
+                    _logger.LogError($"Publishing IPC message failed {routingKey}");
+                }
+                else
+                {
+                    cnt++;
                 }
             }
+
+            return cnt;
         }
     }
 }

@@ -45,6 +45,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             DataTypes.apinvoicestatusmessage => typeof(APInvoiceStatusMessage),
             DataTypes.appaymentrequeststatusmessage => typeof(APPaymentRequestStatusMessage),
             DataTypes.appayment => typeof(APPayment),
+            DataTypes.appaymentwithdocument => typeof(APPaymentWithDocument),
             DataTypes.accountinghubstatusmessage => typeof(AccountingHubStatusMessage),
             DataTypes.gljournal => typeof(GLJournal),
             DataTypes.cashmanagementstatusmessage => typeof(CashManagementStatusMessage),
