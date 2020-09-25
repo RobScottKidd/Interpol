@@ -14,8 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.GlobalUtilities\CMH.CSS.ERP.GlobalUtilities.csproj" />
-    <ProjectReference Include="..\..\cmh.css.erp.integrationhub.public\Solutions\CMH.CSS.ERP.IntegrationHub.CanonicalModels\CMH.CSS.ERP.IntegrationHub.CanonicalModels.csproj" />
     <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Configuration\CMH.CS.ERP.IntegrationHub.Interpol.Configuration.csproj" />
     <ProjectReference Include="..\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces\CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.csproj" />
   </ItemGroup>
