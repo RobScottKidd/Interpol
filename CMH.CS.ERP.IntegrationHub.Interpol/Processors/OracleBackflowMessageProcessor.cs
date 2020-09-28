@@ -142,7 +142,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         
                         var keySplit = usableRoutingKey.RoutingKey.Split('.');
                         eventMessage.Exchange = $"corporate.erp.{keySplit[2]}";
-                        eventMessage.RoutingKey = usableRoutingKey.RoutingKey;
+                        eventMessage.RoutingKey = usableRoutingKey.RoutingKey.ToLower();
 
                         if (!_connector.PublishEventMessage(eventMessage))
                         {
