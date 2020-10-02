@@ -9,8 +9,8 @@
   </PropertyGroup>
 
   <ItemGroup> 
-    <PackageReference Include="CMH.Common.Events" Version="1.0.0.28-develop" /> 
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.210-development" />
+    <PackageReference Include="CMH.Common.Events" Version="1.0.0.28-develop" />
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.205-development" />
   </ItemGroup>
 
 </Project>
