@@ -74,7 +74,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         {
                             DataType = DataTypes.gljournal,
                             EventType = GL_TYPE,
-                            MessageType = EventClass.Notice,
+                            MessageType = EventClass.Detail,
                             Model = glJournal,
                             RoutingKeys = notifyBUs.Select(notifyBU => new EMBRoutingKeyInfo()
                             {
