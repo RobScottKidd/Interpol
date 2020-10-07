@@ -9,7 +9,6 @@ using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -131,7 +130,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     // note: custom oracle report currently expects UTC timezone when providing date/time ranges
                     fileContents = await _gateway.CreateAndRetrieveDataTypeFile(DataType, $"{BusinessUnit.BUName} BU", startDate, endDate, includeEndDate, taskLogGuid);
                     //TODO: Leaving this in here because it is a good way to diagnose parsing issue with data. Comment out the above line and uncomment this one to read xml from a file
-                    //fileContents = File.ReadAllText(@"C:\TestXML\appaymentwithdocument_test.xml");
+                    //fileContents = File.ReadAllText(@"C:\TestXML\accountinghubfeedback_DUMP_132332530862581837_with_bad_data.xml");
 
                     _logger.LogInformation($"Oracle returned XML file of length { fileContents?.Length } (< 200 characters means the file was empty)");
 
