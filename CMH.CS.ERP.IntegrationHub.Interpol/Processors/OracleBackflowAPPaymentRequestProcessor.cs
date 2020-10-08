@@ -11,8 +11,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
     /// </summary>
     public class OracleBackflowAPPaymentRequestProcessor : OracleBackflowProcessor<APPaymentRequest>
     {
-        private readonly IOracleBackflowProcessor<APInvoice> _apInvoiceProcessor;
-
         /// <summary>
         /// DI constructor
         /// </summary>
@@ -20,12 +18,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// <param name="logger">The class logger</param>
         /// <param name="rootElement">The root element to search for when parsing backflow XML</param>
         public OracleBackflowAPPaymentRequestProcessor(
-            IOracleBackflowProcessor<APInvoice> apInvoiceProcessor,
             ILogger<OracleBackflowAPPaymentRequestProcessor> logger,
             string rootElement
         ) : base(logger, rootElement)
         {
-            _apInvoiceProcessor = apInvoiceProcessor;
         }
 
         /// <summary>
