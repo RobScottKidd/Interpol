@@ -70,6 +70,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.ConsoleApp
             {
                 defaultLogger.Info("Shutdown");
                 LogManager.Shutdown();
+                Environment.Exit(Environment.ExitCode);
             }
         }
     }
