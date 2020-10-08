@@ -58,6 +58,8 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
             serviceThread.Join(THREAD_JOIN_TIMEOUT);
 
             _logger.Info($"{nameof(WindowsServiceRunner)} stopped");
+
+            Environment.Exit(Environment.ExitCode);
         }
 
         /// <summary>
