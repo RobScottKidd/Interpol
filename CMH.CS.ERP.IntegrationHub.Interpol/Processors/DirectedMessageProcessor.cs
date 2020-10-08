@@ -10,6 +10,7 @@ using System.Text;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Processors
 {
+    /// <inheritdoc />
     public class DirectedMessageProcessor : IDirectedMessageProcessor
     {
         private readonly IMessageBusConnector _connector;
@@ -30,7 +31,6 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Processors
         /// <inheritdoc />
         public int Process(object[] items, string businessUnit, string exchangeName, string routingKey)
         {
-
             int cnt = 0;
             foreach (var item in items)
             {
