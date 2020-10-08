@@ -241,10 +241,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                 )
                 .AddSingleton<IOracleBackflowPostProcessor<APPayment>, OracleBackflowAPPaymentPostProcessor>()
                 .AddSingleton<IOracleBackflowProcessor<APPaymentRequest>>(
-                    serviceProvider => new OracleBackflowAPPaymentRequestProcessor(
-                        serviceProvider.GetService<IOracleBackflowProcessor<APInvoice>>(),
-                        serviceProvider.GetService<ILogger<OracleBackflowAPPaymentRequestProcessor>>(),
-                        "InvoiceHeaders"
+                    serviceProvider => new OracleBackflowProcessor<APPaymentRequest>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPaymentRequest>>>(),
+                        "APPaymentRequest"
                     )
                 )
                 .AddSingleton<IOracleBackflowPostProcessor<APPaymentRequest>, OracleBackflowAPPaymentRequestPostProcessor>()
