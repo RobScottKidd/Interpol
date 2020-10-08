@@ -59,6 +59,10 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
 
             _logger.Info($"{nameof(WindowsServiceRunner)} stopped");
 
+            Delay(7000);
+
+            _logger.Info($"{nameof(WindowsServiceRunner)} killing process");
+
             Environment.Exit(Environment.ExitCode);
         }
 
@@ -98,6 +102,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
         {
             StopRequested -= StopService;
             _service.Stop(sender, e);
+        }
+
+        private static void Delay(int Time_delay)
+        {
+            int i = 0;
+            var delayTimer = new System.Timers.Timer();
+            delayTimer.Interval = Time_delay;
+            delayTimer.AutoReset = false; //so that it only calls the method once
+            delayTimer.Elapsed += (s, args) => i = 1;
+            delayTimer.Start();
+            while (i == 0) { };
         }
     }
 }
