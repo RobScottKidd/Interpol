@@ -10,10 +10,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Processors\OracleBackflowAPPaymentRequestProcessor.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_DEV.config" />
     <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_ITG.config" />
     <None Remove="CMH.CS.ERP.IntegrationHub.Interpol.dll.CORP_PROD.config" />
