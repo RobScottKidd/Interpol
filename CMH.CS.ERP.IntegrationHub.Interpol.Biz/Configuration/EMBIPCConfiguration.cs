@@ -4,6 +4,9 @@ using System.Text;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz.Configuration
 {
+    /// <summary>
+    /// Special class for handling IPC exchange and queue configuration
+    /// </summary>
     public class EMBIPCConfiguration
     {
         /// <summary>
