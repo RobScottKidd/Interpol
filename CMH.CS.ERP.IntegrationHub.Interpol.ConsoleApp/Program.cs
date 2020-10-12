@@ -40,6 +40,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.ConsoleApp
                 });
 
                 Thread serviceThread = new Thread(new ThreadStart(consoleRunner.Run));
+                serviceThread.IsBackground = true;
                 serviceThread.Start();
 #if DEBUG
                 Console.WriteLine("Service started in new thread, press Ctrl+C to stop execution...");

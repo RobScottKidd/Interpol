@@ -53,6 +53,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
             {
                 defaultLogger.Info("Shutdown");
                 LogManager.Shutdown();
+                Environment.Exit(Environment.ExitCode);
             }
         }
     }
