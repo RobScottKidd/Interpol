@@ -8,6 +8,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Models
     /// </summary>
     public class ReportParameter : IReportParameter
     {
+
         /// <inheritdoc/>
         public Guid ReportParameterID { get; set; }
 
