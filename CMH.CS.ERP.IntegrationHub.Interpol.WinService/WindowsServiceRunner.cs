@@ -72,7 +72,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error while running {nameof(WindowsServiceRunner)}");
+                _logger.Fatal(ex, $"Error while running {nameof(WindowsServiceRunner)}");
                 OnStop();
                 //throw ex;
             }
