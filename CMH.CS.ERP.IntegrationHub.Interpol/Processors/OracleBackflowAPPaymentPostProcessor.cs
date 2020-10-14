@@ -14,6 +14,7 @@ using System.Linq;
 using EventClass = CMH.Common.Events.Models.EventClass;
 using CMH.CSS.ERP.GlobalUtilities;
 using CMH.CS.ERP.IntegrationHub.Interpol.Biz.Configuration;
+using Newtonsoft.Json;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
@@ -97,12 +98,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         var notifyBUs = itemGuid.HasValue && buLookup.TryGetValue(itemGuid.Value, out IBusinessUnit bu)
                                         ? new IBusinessUnit[] { bu }
                                         : payment.BusinessUnits.Distinct().Select(buName => new BusinessUnit(buName)).ToArray();
+
+                        payment.Documents = null;
+
                         return new RoutableItem<APPayment>()
                         {
                             DataType = DataTypes.appayment,
                             EventType = AP_PAYMENT_TYPE,
                             MessageType = EventClass.Detail,
-                            Model = payment,
+                            Model = JsonConvert.DeserializeObject<APPayment>(JsonConvert.SerializeObject(payment)),
                             RoutingKeys = notifyBUs.Select(notifyBU => new EMBRoutingKeyInfo()
                             {
                                 BusinessUnit = notifyBU,
