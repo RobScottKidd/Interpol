@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup> 
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.245-IH729updatetomatchv1" /> 
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.246-IH729updatetomatchv1" /> 
     <PackageReference Include="FluentValidation" Version="9.0.1" />
   </ItemGroup>
 
