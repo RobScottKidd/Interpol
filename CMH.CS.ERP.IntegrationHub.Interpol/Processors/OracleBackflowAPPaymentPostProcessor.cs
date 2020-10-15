@@ -6,20 +6,27 @@ using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels.Enumerations;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Diagnostics;
 using System.Linq;
 
 using EventClass = CMH.Common.Events.Models.EventClass;
+using CMH.CSS.ERP.GlobalUtilities;
+using CMH.CS.ERP.IntegrationHub.Interpol.Biz.Configuration;
+using Newtonsoft.Json;
 
 namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
 {
     /// <summary>
     /// Supplier specific implementation of backflow post processor
     /// </summary>
-    public class OracleBackflowAPPaymentPostProcessor : IOracleBackflowPostProcessor<APPayment>
+    public class OracleBackflowAPPaymentPostProcessor : IOracleBackflowPostProcessor<APPaymentWithDocument>
     {
+        private readonly EMBIPCConfiguration _config;
         private readonly ILogger<OracleBackflowAPPaymentPostProcessor> _logger;
         private readonly IMessageProcessor _messageProcessor;
+        private readonly IDirectedMessageProcessor _directedMessageProcessor;
         private readonly IBUTrackerRepository _bUTrackerRepo;
 
         private const string AP_PAYMENT_TYPE = "appayment";
@@ -29,19 +36,25 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
         /// </summary>
         /// <param name="logger">The class logger</param>
         /// <param name="messageProcessor">The message processor</param>
+        /// <param name="directedMessageProcessor">Special message processor that send messages to designed exchange and routing key</param>
         /// <param name="bUTrackerRepo">The GUID-to-BU translation repository</param>
+        /// <param name="config">Config values for IPC routing</param>
         public OracleBackflowAPPaymentPostProcessor(
             ILogger<OracleBackflowAPPaymentPostProcessor> logger,
             IMessageProcessor messageProcessor,
-            IBUTrackerRepository bUTrackerRepo
+            IDirectedMessageProcessor directedMessageProcessor,
+            IBUTrackerRepository bUTrackerRepo,
+            EMBIPCConfiguration config
         ) {
             _logger = logger;
             _messageProcessor = messageProcessor;
+            _directedMessageProcessor = directedMessageProcessor;
             _bUTrackerRepo = bUTrackerRepo;
+            _config = config;
         }
 
         /// <inheritdoc/>
-        public int Process(IProcessingResultSet<APPayment> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
+        public int Process(IProcessingResultSet<APPaymentWithDocument> processingResults, IBusinessUnit businessUnit, DateTime lockReleaseTime, Guid processId)
         {
             var methodStopwatch = new Stopwatch();
             methodStopwatch.Start();
@@ -52,6 +65,20 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             try
             {
                 var actionStopwatch = new Stopwatch();
+                var itemsWithDocuments = processingResults.ProcessedItems
+                                    .Where(doc => doc.ProcessedItem.Documents != null && doc.ProcessedItem.Documents.Count() > 0)
+                                    .Select(payment => new APImageMessage()
+                                    {
+                                        Canonical = (APPayment) payment.ProcessedItem,
+                                        Documents = payment.ProcessedItem.Documents
+                                    })                                   
+                                    .ToArray();
+
+                var messageCount = _directedMessageProcessor.Process(itemsWithDocuments, businessUnit.BUName, _config.IPCExchange, _config.IPCRoutingKey);
+                actionStopwatch.Stop();
+
+                _logger.LogTrace($"{ buDatatype } published { messageCount }/{ itemsWithDocuments.Count() } messages, elapsed time: { actionStopwatch.Elapsed }");
+
                 var allGuids = processingResults?.ProcessedItems
                                 ?.Where(x => x?.ProcessedItem?.InvoiceGuid != null)
                                 ?.Select(x => x.ProcessedItem.InvoiceGuid.Value)
@@ -71,12 +98,15 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                         var notifyBUs = itemGuid.HasValue && buLookup.TryGetValue(itemGuid.Value, out IBusinessUnit bu)
                                         ? new IBusinessUnit[] { bu }
                                         : payment.BusinessUnits.Distinct().Select(buName => new BusinessUnit(buName)).ToArray();
+
+                        payment.Documents = null;
+
                         return new RoutableItem<APPayment>()
                         {
                             DataType = DataTypes.appayment,
                             EventType = AP_PAYMENT_TYPE,
                             MessageType = EventClass.Detail,
-                            Model = payment,
+                            Model = JsonConvert.DeserializeObject<APPayment>(JsonConvert.SerializeObject(payment)),
                             RoutingKeys = notifyBUs.Select(notifyBU => new EMBRoutingKeyInfo()
                             {
                                 BusinessUnit = notifyBU,
@@ -89,7 +119,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
                     .ToList<IRoutableItem<APPayment>>();
 
                 actionStopwatch.Restart();
-                var messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
+                messageCount = _messageProcessor.Process(proccessedResults, businessUnit, lockReleaseTime, processId);
                 actionStopwatch.Stop();
 
                 _logger.LogTrace($"{ buDatatype } published { messageCount }/{ proccessedResults.Count } messages, elapsed time: { actionStopwatch.Elapsed }");

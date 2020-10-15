@@ -14,6 +14,7 @@ using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Configuration;
 using CMH.CS.ERP.IntegrationHub.Interpol.Interfaces.Data;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models;
 using CMH.CS.ERP.IntegrationHub.Interpol.Models.Mappers;
+using CMH.CS.ERP.IntegrationHub.Interpol.Processors;
 using CMH.CS.ERP.IntegrationHub.Interpol.ServiceHosting;
 using CMH.CSS.ERP.GlobalUtilities;
 using CMH.CSS.ERP.IntegrationHub.CanonicalModels;
@@ -139,6 +140,11 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                     ScheduleServiceEndpoint = GetAssemblyConfigValue("OracleERP:ScheduleServiceEndpoint"),
                     Username = GetAssemblyConfigValue("OracleERP:Username")
                 })
+                .AddSingleton<EMBIPCConfiguration, EMBIPCConfiguration>(serviceProvider => new EMBIPCConfiguration()
+                {
+                    IPCExchange = GetAssemblyConfigValue("IPCExchange"),
+                    IPCRoutingKey = GetAssemblyConfigValue("IPCRoutingKey")
+                })
                 .AddSingleton<IRabbitMQConfiguration, RabbitMQConfiguration>(serviceProvider => new RabbitMQConfiguration()
                 {
                     HostName = GetAssemblyConfigValue("RabbitMQClient:hostname"),
@@ -190,6 +196,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                 .AddSingleton<IDataCache, DataCache>()
                 .AddTransient<ISchedulerTaskFactory, SchedulerTaskFactory>()
                 .AddTransient<IMessageProcessor, OracleBackflowMessageProcessor>()
+                .AddTransient<IDirectedMessageProcessor, DirectedMessageProcessor>()
                 .AddTransient<IAggregateMessageProcessor, OracleBackflowAggregateMessageProcessor>()
                 .AddTransient<IReportXmlExtractor, ReportXmlExtractor>()
                 .AddSingleton<IScheduleReportNameProvider, ScheduleReportNameProvider>()
@@ -201,7 +208,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                 .AddTransient<ISchedulerTask, SchedulerTask<AccountingHubStatusMessage>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APInvoice>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APInvoiceStatusMessage>>()
-                .AddTransient<ISchedulerTask, SchedulerTask<APPayment>>()
+                .AddTransient<ISchedulerTask, SchedulerTask<APPaymentWithDocument>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APPaymentRequest>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<APPaymentRequestStatusMessage>>()
                 .AddTransient<ISchedulerTask, SchedulerTask<CashManagementStatusMessage>>()
@@ -233,18 +240,17 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol
                     )
                 )
                 .AddSingleton<IOracleBackflowPostProcessor<APInvoiceStatusMessage>, OracleBackflowAPInvoiceStatusPostProcessor>()
-                .AddSingleton<IOracleBackflowProcessor<APPayment>>(
-                    serviceProvider => new OracleBackflowProcessor<APPayment>(
-                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPayment>>>(),
+                .AddSingleton<IOracleBackflowProcessor<APPaymentWithDocument>>(
+                    serviceProvider => new OracleBackflowProcessor<APPaymentWithDocument>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPaymentWithDocument>>>(),
                         "Payments"
                     )
                 )
-                .AddSingleton<IOracleBackflowPostProcessor<APPayment>, OracleBackflowAPPaymentPostProcessor>()
+                .AddSingleton<IOracleBackflowPostProcessor<APPaymentWithDocument>, OracleBackflowAPPaymentPostProcessor>()
                 .AddSingleton<IOracleBackflowProcessor<APPaymentRequest>>(
-                    serviceProvider => new OracleBackflowAPPaymentRequestProcessor(
-                        serviceProvider.GetService<IOracleBackflowProcessor<APInvoice>>(),
-                        serviceProvider.GetService<ILogger<OracleBackflowAPPaymentRequestProcessor>>(),
-                        "InvoiceHeaders"
+                    serviceProvider => new OracleBackflowProcessor<APPaymentRequest>(
+                        serviceProvider.GetService<ILogger<OracleBackflowProcessor<APPaymentRequest>>>(),
+                        "APPaymentRequest"
                     )
                 )
                 .AddSingleton<IOracleBackflowPostProcessor<APPaymentRequest>, OracleBackflowAPPaymentRequestPostProcessor>()
