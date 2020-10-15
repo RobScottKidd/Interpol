@@ -39,6 +39,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
 
             StopRequested += StopService;
             serviceThread = new Thread(new ThreadStart(Run));
+            serviceThread.IsBackground = true;
             serviceThread.Start();
 
             _logger.Info($"{nameof(WindowsServiceRunner)} started");
@@ -71,8 +72,9 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.WinService
             }
             catch (Exception ex)
             {
-                _logger.Error(ex, $"Error while running {nameof(WindowsServiceRunner)}");
-                throw ex;
+                _logger.Fatal(ex, $"Error while running {nameof(WindowsServiceRunner)}");
+                OnStop();
+                //throw ex;
             }
         }
 
