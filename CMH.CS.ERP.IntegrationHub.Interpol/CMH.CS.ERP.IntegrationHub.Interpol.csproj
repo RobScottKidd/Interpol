@@ -66,7 +66,7 @@
 
   <ItemGroup>
     <PackageReference Include="CMH.Common.RabbitMQClient" Version="1.0.0.44-develop" />
-    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.263-development" />
+    <PackageReference Include="CMH.CSS.ERP.IntegrationHub.CanonicalModels" Version="1.0.0.266-development" />
     <PackageReference Include="Dapper" Version="2.0.35" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.6" />
     <PackageReference Include="NLog.Extensions.Logging" Version="1.6.4" />
