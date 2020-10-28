@@ -56,6 +56,7 @@ namespace CMH.CS.ERP.IntegrationHub.Interpol.Biz
             nonBUSpecificDataTypes = new[]
             { 
                 DataTypes.supplier, 
+                DataTypes.appaymentwithdocument,
                 DataTypes.apinvoicestatusmessage, 
                 DataTypes.appaymentrequeststatusmessage,
                 DataTypes.accountinghubstatusmessage,
