@@ -17,7 +17,7 @@
 
   <ItemGroup>
     <Compile Remove="bin\**" />
-    <EmbeddedResource Remove="bin\**" />
+    <EmbeddedResource Remove="bin\**" /> 
     <None Remove="bin\**" />
   </ItemGroup>
 
